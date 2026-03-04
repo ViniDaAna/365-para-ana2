@@ -1,102 +1,125 @@
-/* =========================================================
-   ATOS — identidade + aura + cores
-   (Ato 1 → 6 preparado)
-========================================================= */
+/* css/atos.css */
 
-/* defaults (caso falhe algum atributo) */
+/* =========================
+   Tema por ATO + Aura
+   - body[data-ato="1..6"]
+   - body[data-dia="1..365"]
+   - JS seta: --auraT (0..1)
+========================= */
+
 :root{
+  /* aura dinâmica (JS controla --auraT) */
+  --auraT: 0;
   --auraMin: 0.10;
   --auraMax: 0.28;
-  --auraT: 0; /* JS seta 0 → 1 dentro do ato */
+  --auraColor: rgba(212,175,55,1);
   --auraOpacity: calc(var(--auraMin) + (var(--auraT) * (var(--auraMax) - var(--auraMin))));
+
+  /* acento do ato (pra títulos/linhas) */
+  --accent: #d4af37;
 }
 
-/* a “aura” é um glow suave no fundo */
+/* Aura no fundo (leve, elegante, sem pesar performance) */
 body::before{
   content:"";
-  position:fixed;
-  inset:-40px;
-  pointer-events:none;
-  z-index:-1;
-  background:
-    radial-gradient(600px 420px at 50% 35%,
-      rgba(255,255,255,0.12),
-      rgba(0,0,0,0) 65%
-    );
-  opacity:0.10;
-  filter: blur(10px);
-}
+  position: fixed;
+  inset: -20vmax;
+  pointer-events: none;
+  z-index: 0;
 
-/* camada de aura por ato */
-body::after{
-  content:"";
-  position:fixed;
-  inset:-60px;
-  pointer-events:none;
-  z-index:-2;
   background:
-    radial-gradient(720px 520px at 50% 35%,
-      var(--auraColor),
-      rgba(0,0,0,0) 68%
+    radial-gradient(
+      60vmax 60vmax at 50% 18%,
+      rgba(0,0,0,0) 30%,
+      rgba(0,0,0,0) 55%
+    ),
+    radial-gradient(
+      55vmax 45vmax at 50% 25%,
+      rgba(0,0,0,0) 35%,
+      rgba(0,0,0,0) 60%
+    ),
+    radial-gradient(
+      52vmax 42vmax at 50% 24%,
+      color-mix(in srgb, var(--auraColor) 100%, transparent) 0%,
+      transparent 62%
     );
+
   opacity: var(--auraOpacity);
-  filter: blur(22px);
+  filter: blur(10px);
   transform: translateZ(0);
 }
 
-/* =========================================================
-   ATO 1 — Escolha (dourado suave)
-========================================================= */
+/* garante que o app fique acima da aura */
+#app{ position: relative; z-index: 1; }
+
+/* Pequenos acentos visuais */
+#titulo{
+  color: var(--accent);
+  letter-spacing: 0.2px;
+}
+
+/* =========================
+   ATO 1 — Escolha (1–30)
+   dourado suave
+========================= */
 body[data-ato="1"]{
   --accent: #d4af37;
   --auraColor: rgba(212,175,55,1);
+  --auraMin: 0.10;
+  --auraMax: 0.26;
 }
 
-/* =========================================================
-   ATO 2 — Conexão (âmbar mais quente / contraste macio)
-========================================================= */
+/* =========================
+   ATO 2 — Conexão (31–90)
+   âmbar suave (um pouco mais quente)
+========================= */
 body[data-ato="2"]{
-  --accent: #e0b45a;
-  --auraColor: rgba(224,180,90,1);
+  --accent: #e1b86a;
+  --auraColor: rgba(225,184,106,1);
+  --auraMin: 0.10;
+  --auraMax: 0.26;
 }
 
-/* =========================================================
-   ATO 3 — Fogo (bordô profundo)
-========================================================= */
+/* =========================
+   ATO 3 — Fogo (91–150)
+   bordô profundo
+========================= */
 body[data-ato="3"]{
-  --accent: #7b2430;
-  --auraColor: rgba(123,36,48,1);
-  --auraMin: 0.14;
-  --auraMax: 0.34;
-}
-
-/* =========================================================
-   ATO 4 — Crescimento (neutro refinado / dourado discreto)
-   (deixa pronto, sem interatividade ainda)
-========================================================= */
-body[data-ato="4"]{
-  --accent: #caa86a;
-  --auraColor: rgba(202,168,106,1);
+  --accent: #a33a46;
+  --auraColor: rgba(163,58,70,1);
   --auraMin: 0.12;
   --auraMax: 0.30;
 }
 
-/* =========================================================
-   ATO 5 — Raiz (tons terrosos suaves)
-========================================================= */
-body[data-ato="5"]{
-  --accent: #8b6a45;
-  --auraColor: rgba(139,106,69,1);
-  --auraMin: 0.12;
-  --auraMax: 0.28;
+/* =========================
+   ATO 4 — Crescimento (151–240)
+   neutro refinado (dourado discreto)
+========================= */
+body[data-ato="4"]{
+  --accent: #c7b99b;
+  --auraColor: rgba(199,185,155,1);
+  --auraMin: 0.10;
+  --auraMax: 0.24;
 }
 
-/* =========================================================
-   ATO 6 — Recomeço (retorno ao dourado, mais luminoso)
-========================================================= */
+/* =========================
+   ATO 5 — Raiz (241–330)
+   casa/terra
+========================= */
+body[data-ato="5"]{
+  --accent: #b08a6a;
+  --auraColor: rgba(176,138,106,1);
+  --auraMin: 0.10;
+  --auraMax: 0.24;
+}
+
+/* =========================
+   ATO 6 — Recomeço (331–365)
+   volta ao dourado (mais luminoso)
+========================= */
 body[data-ato="6"]{
-  --accent: #e5c86d;
-  --auraColor: rgba(229,200,109,1);
-  --auraMin: 0.14;
-  --auraMax: 0.36;
+  --accent: #e6c56a;
+  --auraColor: rgba(230,197,106,1);
+  --auraMin: 0.12;
+  --auraMax: 0.30;
 }
