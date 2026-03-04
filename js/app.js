@@ -1,9 +1,9 @@
 // js/app.js
-// Controlador simples do Projeto 365 (por enquanto):
 // - calcula dia atual (com ?day= pra teste)
 // - seta data-ato e data-dia
 // - seta --auraT (0..1 dentro do ato)
 // - renderiza poema em #poema usando window.getPoemaDoDia(dia)
+// - segredo especial (ex: Dia 120) aparece junto do poema
 
 (function () {
   const START_DATE_ISO = "2026-02-24"; // Dia 1
@@ -60,7 +60,7 @@
     }
     const {start, end} = getFaixaAto(dia);
     const denom = Math.max(1, (end - start));
-    const t = (dia - start) / denom;         // 0..1 dentro do ato
+    const t = (dia - start) / denom;
     document.documentElement.style.setProperty("--auraT", clamp01(t).toFixed(4));
   }
 
@@ -72,23 +72,29 @@
     setAuraProgress(dia);
   }
 
+  function getPoema(dia){
+    if(typeof window.getPoemaDoDia === "function") return window.getPoemaDoDia(dia) || "";
+    return "Ainda não carregou getPoemaDoDia().";
+  }
+
+  function getSegredo(dia){
+    if(typeof window.getSegredoDoDia === "function"){
+      const s = window.getSegredoDoDia(dia);
+      if(s && String(s).trim().length) return String(s);
+    }
+    return "";
+  }
+
   function render(dia){
     setTema(dia);
 
-    // título em cima (você pode trocar depois)
-    if(dia <= 0){
-      tituloEl.textContent = "Antes do primeiro poema.";
-    }else{
-      tituloEl.textContent = `Dia ${dia} de 365`;
-    }
+    tituloEl.textContent = (dia <= 0) ? "Antes do primeiro poema." : `Dia ${dia} de 365`;
 
-    // poema
-    const texto = (typeof window.getPoemaDoDia === "function")
-      ? window.getPoemaDoDia(dia)
-      : "Ainda não carregou getPoemaDoDia().";
+    const poema = getPoema(dia);
+    const segredo = getSegredo(dia);
 
-    // simples (sem typing por enquanto)
-    poemaEl.textContent = texto || "";
+    // Se tiver segredo especial do dia, ele aparece abaixo (separado)
+    poemaEl.textContent = segredo ? `${poema}\n\n—\n\n${segredo}` : poema;
   }
 
   function boot(){
