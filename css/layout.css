@@ -1,0 +1,56 @@
+.container{
+  width: min(900px, 92vw);
+  margin: auto;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.fade{
+  opacity:0;
+  transform: translateY(10px);
+  transition: all .6s ease;
+}
+
+.fade.show{
+  opacity:1;
+  transform: translateY(0);
+}
+
+.thin-line{
+  width:60px;
+  height:1px;
+  margin:12px auto 22px;
+  background: rgba(241,233,220,0.3);
+}
+
+.meta{
+  margin-top:12px;
+  font-size:14px;
+  opacity:.65;
+  text-align:center;
+}
+
+.btnRow{
+  margin-top:26px;
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+button{
+  font-family:"Cormorant Garamond", serif;
+  padding:10px 18px;
+  border-radius:10px;
+  border:1px solid rgba(241,233,220,0.25);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+button:hover{
+  background:rgba(241,233,220,0.08);
+}
