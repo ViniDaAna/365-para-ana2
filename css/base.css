@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Parisienne&display=swap');
+
+:root{
+  --bg:#0d0d0f;
+  --bg2:#141416;
+
+  --panel: rgba(20,20,22,0.86);
+  --text:#f1e9dc;
+  --muted: rgba(241,233,220,0.65);
+
+  --line: rgba(241,233,220,0.14);
+
+  /* Aura dinâmica (JS vai setar) */
+  --auraT: 0;      /* 0 → 1 */
+  --auraMin: 0.10;
+  --auraMax: 0.28;
+  --auraColor: rgba(212,175,55,1);
+  --auraOpacity: calc(var(--auraMin) + (var(--auraT) * (var(--auraMax) - var(--auraMin))));
+
+  --radius: 18px;
+}
+
+*{ box-sizing:border-box; }
+
+html, body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  font-family: "Cormorant Garamond", serif;
+  color: var(--text);
+  background: radial-gradient(1200px 900px at 50% 20%,
+      rgba(212,175,55, calc(var(--auraOpacity))) 0%,
+      rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  transition: background 420ms ease;
+}
+
+#app{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding: 22px 14px 46px;
+}
+
+#titulo{
+  margin: 18px 0 18px;
+  font-weight: 500;
+  letter-spacing: .5px;
+  text-align:center;
+  opacity:.92;
+}
+
+#poema{
+  width: min(820px, 92vw);
+  background: var(--panel);
+  border: 1px solid rgba(241,233,220,0.12);
+  border-radius: var(--radius);
+  padding: 26px 22px;
+  line-height: 1.9;
+  font-size: 20px;
+  text-align:center;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+  white-space: pre-wrap;
+}
+
+@media (max-width:520px){
+  #poema{ font-size:18px; padding:22px 18px; }
+}
