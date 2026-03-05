@@ -1,56 +1,426 @@
-.container{
+/* css/layout.css */
+
+.view{
+  width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 22px 14px 46px;
+}
+
+.view[data-visible="false"]{
+  display:none;
+}
+
+/* Painéis */
+.panel{
   width: min(900px, 92vw);
-  margin: auto;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: calc(var(--radius) + 4px);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  padding: 26px 22px 26px;
+  position: relative;
 }
 
-.hidden{
-  display:none !important;
+.login-panel{
+  width: min(640px, 92vw);
+  text-align:center;
 }
 
+#tituloLogin{
+  margin: 10px 0 8px;
+  font-weight:500;
+  letter-spacing:.6px;
+  color: var(--accent);
+  font-size: 34px;
+}
+
+#loginHint{
+  margin: 8px 0 16px;
+  letter-spacing: 0.25px;
+  opacity: .85;
+}
+
+#loginForm{
+  margin-top: 8px;
+}
+
+#senhaInput{
+  width: min(340px, 84%);
+  display:block;
+  margin: 14px auto 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  outline:none;
+  color: rgba(241,233,220,0.95);
+  letter-spacing:0.35px;
+  font-size: 15px;
+}
+
+#senhaInput::placeholder{
+  color: rgba(241,233,220,0.35);
+}
+
+#btnEntrar{
+  display:block;
+  margin: 0 auto;
+  padding: 10px 16px;
+}
+
+#loginMsg{
+  margin-top: 12px;
+  min-height: 18px;
+  opacity:.85;
+}
+
+/* Topbar */
+.topbar{
+  width: min(980px, 96vw);
+  margin: 22px auto 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap: 14px;
+}
+
+.topbar-left{
+  flex:1;
+  min-width: 200px;
+}
+
+#titulo{
+  margin: 0;
+  font-weight:500;
+  letter-spacing:.6px;
+  color: var(--accent);
+  font-size: 28px;
+}
+
+#subfrase{
+  margin: 6px 0 0;
+  font-size: 14px;
+  letter-spacing:0.25px;
+  opacity:.75;
+}
+
+.topbar-right{
+  display:flex;
+  gap: 10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+/* Botões */
+button{
+  font-family: "Cormorant Garamond", serif;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  color: rgba(241,233,220,0.92);
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor:pointer;
+  transition: 0.2s ease;
+  letter-spacing:0.35px;
+  font-size: 16px;
+}
+
+button:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.28);
+}
+
+button:active{ transform: translateY(0); }
+
+button:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  transform:none;
+}
+
+button.ghost,
+.ghost{
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(241,233,220,0.78);
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+/* Conteúdo central */
+.content{
+  width: min(980px, 96vw);
+  margin: 0 auto 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.meta{
+  display:flex;
+  gap: 12px;
+  justify-content:center;
+  align-items:center;
+  margin-top: 10px;
+  font-size: 14px;
+  letter-spacing:0.3px;
+  opacity: .85;
+}
+
+.meta span{
+  color: rgba(241,233,220,0.45);
+}
+
+/* Poema wrap (bloco principal) */
+.poema-wrap{
+  width: min(820px, 92vw);
+  margin: 16px auto 12px;
+  padding: 26px 22px 24px;
+  border-radius: 22px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: var(--shadowSoft);
+  position: relative;
+}
+
+#poema{
+  white-space: pre-wrap;
+  text-align:center;
+  line-height: 1.85;
+  font-size: 22px;
+  letter-spacing: 0.25px;
+  color: rgba(241,233,220,0.92);
+  padding: 6px 8px 2px;
+  min-height: 120px;
+}
+
+/* cursor (se usar typewriter) */
+#cursor{
+  display:none;
+  position:absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 10px;
+  height: 18px;
+  border-radius: 2px;
+  background: rgba(241,233,220,0.55);
+  opacity: .85;
+  animation: blink 1.1s steps(1) infinite;
+}
+#cursor.on{ display:block; }
+
+@keyframes blink{
+  50%{ opacity: 0; }
+}
+
+/* Fade utility */
 .fade{
   opacity:0;
-  transform: translateY(10px);
-  transition: all .6s ease;
+  transform: translateY(8px);
+  transition: 0.35s ease;
 }
-
 .fade.show{
   opacity:1;
   transform: translateY(0);
 }
 
-.thin-line{
-  width:60px;
-  height:1px;
-  margin:12px auto 22px;
-  background: rgba(241,233,220,0.3);
+/* Ato 1 / Ato 2 slots (preenchidos pelo JS) */
+.ato1-interacao,
+.ato2-interacao{
+  width: min(820px, 92vw);
+  margin-top: 10px;
 }
 
-.meta{
-  margin-top:12px;
-  font-size:14px;
-  opacity:.65;
+/* Toast */
+#toast{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(241,233,220,0.88);
+  padding: 12px 14px;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  z-index: 60;
+  opacity: 0;
+  transition: 0.25s ease;
+  width: min(560px, 92vw);
   text-align:center;
+  letter-spacing:0.25px;
+  line-height:1.45;
+  pointer-events:none;
+}
+#toast.show{
+  opacity:1;
+  transform: translateX(-50%) translateY(0);
 }
 
-.btnRow{
-  margin-top:26px;
+/* =========================
+   MODAIS (memória/saudade/arquivo)
+   ========================= */
+
+.modal[hidden]{ display:none !important; }
+
+.modal{
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display:grid;
+  place-items:center;
+  padding: 18px 14px 28px;
+}
+
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,0.72);
+  backdrop-filter: blur(10px);
+}
+
+.modal-card{
+  position: relative;
+  width: min(820px, 96vw);
+  border-radius: 22px;
+  overflow:hidden;
+  box-shadow: 0 26px 80px rgba(0,0,0,0.65);
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(20,20,22,0.92), rgba(14,14,16,0.92));
+  z-index: 1;
+}
+
+.modal-large{
+  width: min(980px, 96vw);
+}
+
+.modal-header{
   display:flex;
-  gap:12px;
-  justify-content:center;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.modal-header h2{
+  margin: 0;
+  font-weight:500;
+  letter-spacing:.35px;
+  font-size: 18px;
+  color: rgba(241,233,220,0.90);
+}
+
+.icon-btn{
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(241,233,220,0.80);
+}
+
+.modal-body{
+  padding: 18px 16px 18px;
+  color: rgba(241,233,220,0.90);
+  letter-spacing: 0.25px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  max-height: min(72vh, 720px);
+  overflow:auto;
+}
+
+/* Arquivo (lista/busca) */
+.arquivo-top{
+  display:flex;
+  gap: 10px;
   flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  margin-bottom: 12px;
 }
 
-button{
-  font-family:"Cormorant Garamond", serif;
-  padding:10px 18px;
-  border-radius:10px;
-  border:1px solid rgba(241,233,220,0.25);
-  background:transparent;
-  color:var(--text);
-  cursor:pointer;
-  transition:all .25s ease;
+#arquivoBuscar,
+#arquivoDia{
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(241,233,220,0.92);
+  outline:none;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 15px;
+  letter-spacing:0.25px;
 }
 
-button:hover{
-  background:rgba(241,233,220,0.08);
+#arquivoBuscar{ width: min(420px, 86vw); }
+#arquivoDia{ width: 110px; }
+
+#arquivoBuscar::placeholder,
+#arquivoDia::placeholder{
+  color: rgba(241,233,220,0.35);
+}
+
+.arquivo-lista{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.arquivo-item{
+  width:100%;
+  text-align:left;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.16);
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.arquivo-item:hover{
+  border-color: rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.22);
+}
+
+.arquivo-dia{
+  min-width: 80px;
+  color: rgba(241,233,220,0.70);
+  letter-spacing: 0.3px;
+  font-size: 14px;
+}
+
+.arquivo-titulo{
+  flex:1;
+  color: rgba(241,233,220,0.88);
+  letter-spacing:0.25px;
+  font-size: 16px;
+}
+
+/* Responsivo */
+@media (max-width: 720px){
+  #tituloLogin{ font-size: 28px; }
+  #titulo{ font-size: 24px; }
+
+  .topbar{
+    align-items:flex-start;
+    gap: 10px;
+  }
+
+  .poema-wrap{
+    padding: 20px 14px 18px;
+    border-radius: 20px;
+  }
+
+  #poema{
+    font-size: 20px;
+    line-height: 1.78;
+  }
 }
