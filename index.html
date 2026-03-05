@@ -1,76 +1,193 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entre Nós Dois</title>
+  <link rel="icon" href="data:," />
 
-<title>Entre Nós Dois</title>
-
-<link rel="icon" href="data:," />
-
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/atos.css">
-
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/atos.css" />
 </head>
 
-
 <body>
+  <div id="app">
 
-<div id="app">
+    <!-- ============================= -->
+    <!-- LOGIN (GATE) -->
+    <!-- ============================= -->
+    <section id="loginView" class="view" aria-label="Entrada" data-visible="true">
+      <div class="panel login-panel">
+        <h1 id="tituloLogin">Entre nós dois.</h1>
 
-<h1 id="titulo">Entre nós dois.</h1>
+        <p class="muted" id="loginHint">
+          Digite a senha para entrar.
+        </p>
 
-<div id="poema"></div>
+        <form id="loginForm" autocomplete="off">
+          <label class="sr-only" for="senhaInput">Senha</label>
+          <input
+            id="senhaInput"
+            name="senha"
+            type="password"
+            inputmode="numeric"
+            placeholder="Senha"
+            autocomplete="off"
+            aria-label="Senha"
+          />
+          <button id="btnEntrar" type="submit">Entrar</button>
+        </form>
 
-</div>
+        <p id="loginMsg" class="muted" role="status" aria-live="polite"></p>
+      </div>
+    </section>
 
+    <!-- ============================= -->
+    <!-- CONTEÚDO -->
+    <!-- ============================= -->
+    <section id="mainView" class="view" aria-label="Conteúdo" data-visible="false">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="titulo">Entre nós dois.</h1>
+          <p id="subfrase" class="muted" aria-live="polite"></p>
+        </div>
 
-<!-- ============================= -->
-<!-- DATA -->
-<!-- ============================= -->
+        <div class="topbar-right">
+          <button id="btnArquivo" type="button" aria-haspopup="dialog" aria-controls="arquivoModal">
+            Ler poemas antigos
+          </button>
+          <button id="btnMemoria" type="button" aria-haspopup="dialog" aria-controls="memoriaModal" disabled>
+            Memória
+          </button>
+          <button id="btnSaudade" type="button" aria-haspopup="dialog" aria-controls="saudadeModal">
+            Aperte em mim quando tiver com sdd
+          </button>
+          <button id="btnSair" type="button" class="ghost">
+            Sair
+          </button>
+        </div>
+      </header>
 
-<script src="data/prefacio.js"></script>
-<script src="data/memorias.js"></script>
-<script src="data/capsula365.js"></script>
+      <!-- Ganchos para o Ato 2 (linhas se aproximando) -->
+      <div id="ato2Linhas" aria-hidden="true"></div>
 
+      <main class="content">
+        <div class="meta">
+          <span id="diaLabel" class="muted"></span>
+          <span id="atoLabel" class="muted"></span>
+        </div>
 
-<!-- ============================= -->
-<!-- POEMAS POR ATO -->
-<!-- ============================= -->
+        <!-- POEMA -->
+        <article id="poemaWrap" class="poema-wrap">
+          <div id="poema" aria-live="polite"></div>
 
-<script src="data/poemas.ato1.js"></script>
-<script src="data/poemas.ato2.js"></script>
+          <!-- cursor do typewriter (se você usar) -->
+          <span id="cursor" aria-hidden="true"></span>
+        </article>
 
-<!-- preparados para o futuro -->
-<!--
-<script src="data/poemas.ato3.js"></script>
-<script src="data/poemas.ato4.js"></script>
-<script src="data/poemas.ato5.js"></script>
-<script src="data/poemas.ato6.js"></script>
--->
+        <!-- área para interatividade Ato 1 (palavra do dia, montagem do 30 etc) -->
+        <section id="ato1Interacao" class="ato1-interacao" aria-label="Interatividade do Ato 1"></section>
 
+        <!-- área para interatividade Ato 2 (pensamento oculto etc) -->
+        <section id="ato2Interacao" class="ato2-interacao" aria-label="Interatividade do Ato 2"></section>
 
-<!-- ============================= -->
-<!-- AGREGADOR -->
-<!-- ============================= -->
+        <!-- toast / avisos -->
+        <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+      </main>
+    </section>
 
-<script src="data/poemas.index.js"></script>
+    <!-- ============================= -->
+    <!-- MODAL: MEMÓRIA -->
+    <!-- ============================= -->
+    <div id="memoriaModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="memoriaTitulo" hidden>
+      <div class="modal-backdrop" data-close="memoriaModal"></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="memoriaTitulo">Memória</h2>
+          <button type="button" class="icon-btn" data-close="memoriaModal" aria-label="Fechar">Fechar</button>
+        </div>
+        <div id="memoriaConteudo" class="modal-body"></div>
+      </div>
+    </div>
 
+    <!-- ============================= -->
+    <!-- MODAL: SAUDADE -->
+    <!-- ============================= -->
+    <div id="saudadeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="saudadeTitulo" hidden>
+      <div class="modal-backdrop" data-close="saudadeModal"></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="saudadeTitulo">Quando bater saudade</h2>
+          <button type="button" class="icon-btn" data-close="saudadeModal" aria-label="Fechar">Fechar</button>
+        </div>
+        <div id="saudadeConteudo" class="modal-body"></div>
+      </div>
+    </div>
 
-<!-- ============================= -->
-<!-- CORE DO SISTEMA -->
-<!-- ============================= -->
+    <!-- ============================= -->
+    <!-- MODAL: ARQUIVO (POEMAS ANTIGOS) -->
+    <!-- ============================= -->
+    <div id="arquivoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="arquivoTitulo" hidden>
+      <div class="modal-backdrop" data-close="arquivoModal"></div>
+      <div class="modal-card modal-large">
+        <div class="modal-header">
+          <h2 id="arquivoTitulo">Arquivo</h2>
+          <button type="button" class="icon-btn" data-close="arquivoModal" aria-label="Fechar">Fechar</button>
+        </div>
 
-<script src="data/poemas.js"></script>
-<script src="data/segredos.js"></script>
+        <div class="modal-body">
+          <div class="arquivo-top">
+            <label class="sr-only" for="arquivoBuscar">Buscar</label>
+            <input id="arquivoBuscar" type="text" placeholder="Buscar por palavra..." autocomplete="off" />
+            <label class="sr-only" for="arquivoDia">Ir para o dia</label>
+            <input id="arquivoDia" type="number" min="1" max="365" placeholder="Dia" />
+            <button id="btnIrDia" type="button">Abrir</button>
+          </div>
 
-<script src="js/core.js"></script>
-<script src="js/app.js"></script>
+          <div id="arquivoLista" class="arquivo-lista" aria-label="Lista de poemas"></div>
+        </div>
+      </div>
+    </div>
 
+  </div>
 
+  <!-- ============================= -->
+  <!-- DATA -->
+  <!-- ============================= -->
+  <script src="data/prefacio.js"></script>
+  <script src="data/memorias.js"></script>
+  <script src="data/capsula365.js"></script>
 
+  <!-- ============================= -->
+  <!-- POEMAS POR ATO -->
+  <!-- ============================= -->
+  <script src="data/poemas.ato1.js"></script>
+  <script src="data/poemas.ato2.js"></script>
+
+  <!-- preparados para o futuro -->
+  <!--
+  <script src="data/poemas.ato3.js"></script>
+  <script src="data/poemas.ato4.js"></script>
+  <script src="data/poemas.ato5.js"></script>
+  <script src="data/poemas.ato6.js"></script>
+  -->
+
+  <!-- ============================= -->
+  <!-- AGREGADOR -->
+  <!-- ============================= -->
+  <script src="data/poemas.index.js"></script>
+
+  <!-- ============================= -->
+  <!-- SEGREDOS / EXTRAS -->
+  <!-- ============================= -->
+  <script src="data/segredos.js"></script>
+
+  <!-- ============================= -->
+  <!-- CORE DO SISTEMA -->
+  <!-- ============================= -->
+  <script src="js/core.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
