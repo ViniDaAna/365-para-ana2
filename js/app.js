@@ -1,10 +1,14 @@
 // js/app.js
-// Projeto 365 — App (UI + fluxo)
-// Baseado no "antigão" (visual/comportamento), mas organizado.
-// Depende de:
-// - js/core.js  (calcularDia, setTemaPorAto, setDayAttr, getAto, getForcedDay, diffDias...)
-// - data/segredos.js (SEGREDOS, pickSegredo, INTRO_ATOS, ATO1_PALAVRAS, ATO1_UNLOCK_KEY)
-// - poemas.js (getPoemaDoDia, getMemoriaDoDia, getCartaCapsula365)
+// Projeto 365 — App (DOM modular do teu index atual)
+//
+// Depende de (se existirem):
+// - data/segredos.js: INTRO_ATOS, ATO1_PALAVRAS, ATO1_UNLOCK_KEY (opcional), pickSegredo (opcional)
+// - data/poemas.index.js: window.getPoemaDoDia(dia)
+// - data/memorias.js: window.getMemoriaDoDia(dia) (ou equivalente)
+// - data/prefacio.js: window.PREFACIO (opcional)
+// - js/core.js: getForcedDay, diffDias, getAto, getFaixaAto, setTemaPorAto, setDayAttr (opcional)
+//
+// Ele também tem fallbacks internos caso algum helper não exista.
 
 (function () {
   "use strict";
@@ -14,467 +18,56 @@
   // =========================
   const SENHA_CORRETA = "10022024";
 
-  // Toast de inatividade
+  const START_OVERRIDE_KEY = "projeto365_start_override";
+  const INTRO_KEY_PREFIX = "projeto365_intro_vista_";
+
+  // Toast de inatividade (segredinhos)
   const TOAST_COOLDOWN_KEY = "projeto365_toast";
   const TOAST_COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2h
   const TOAST_IDLE_MS = 10000; // 10s
 
-  // Cápsula 365
-  const CAPSULA_OPEN_KEY = "projeto365_capsula_365_aberta";
-  const START_OVERRIDE_KEY = "projeto365_start_override";
+  // Typewriter
+  const TYPE_SPEED = 12;
 
-  // Estado (espelha o antigão)
-  let DIA_EM_TELA = 1;
+  // Saudade (texto)
+  const SAUDADE_TEXTO =
+    "Se você sentiu saudade, é porque o que temos é real.\n" +
+    "E eu escolho você — hoje e todos os dias.";
 
   // =========================
-  // DOM
+  // DOM HELPERS
   // =========================
   const $ = (id) => document.getElementById(id);
+  const qs = (sel, root = document) => root.querySelector(sel);
+  const qsa = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-  const el = {
-    login: $("login"),
-    conteudo: $("conteudo"),
-
-    cornerDateLogin: $("cornerDateLogin"),
-    cornerDate: $("cornerDate"),
-
-    senha: $("senha"),
-
-    fraseContexto: $("fraseContexto"),
-    modoTeste: $("modoTeste"),
-    avisoPoema: $("avisoPoema"),
-
-    tituloTopo: $("tituloTopo"),
-    blocoTexto: $("blocoTexto"),
-
-    introAtoBox: $("introAtoBox"),
-    introAtoTag: $("introAtoTag"),
-    introAtoTexto: $("introAtoTexto"),
-    btnContinuarAto: $("btnContinuarAto"),
-
-    ato2Linhas: $("ato2Linhas"),
-    ato2ThoughtBox: $("ato2ThoughtBox"),
-
-    poema: $("poema"),
-    meta: $("meta"),
-
-    ato1Chave: $("ato1Chave"),
-    ato1Palavra: $("ato1Palavra"),
-    ato1Montagem: $("ato1Montagem"),
-
-    capsulaTrigger: $("capsulaTrigger"),
-    btnAbrirCapsula: $("btnAbrirCapsula"),
-
-    arquivoBox: $("arquivoBox"),
-    memoriasBox: $("memoriasBox"),
-    arquivoSub: $("arquivoSub"),
-    memoriasSub: $("memoriasSub"),
-    rangeRow: $("rangeRow"),
-    listaArquivo: $("listaArquivo"),
-    listaMemorias: $("listaMemorias"),
-
-    botoesNormal: $("botoesNormal"),
-    botoesArquivo: $("botoesArquivo"),
-
-    saudade: $("saudade"),
-
-    capsulaPage: $("capsulaPage"),
-    btnCapsulaVoltar: $("btnCapsulaVoltar"),
-    notebook: $("notebook"),
-    capsulaCarta: $("capsulaCarta"),
-    capsulaFecho: $("capsulaFecho"),
-    btnEscolherDeNovo: $("btnEscolherDeNovo"),
-
-    memoriaPage: $("memoriaPage"),
-    btnMemoriaVoltar: $("btnMemoriaVoltar"),
-    memoriaPaperTitle: $("memoriaPaperTitle"),
-    memoriaPaperMeta: $("memoriaPaperMeta"),
-    memoriaPageTexto: $("memoriaPageTexto"),
-
-    toastSegredo: $("toastSegredo"),
-    fadeOverlay: $("fadeOverlay"),
-  };
-
-  // =========================
-  // HELPERS UI
-  // =========================
-  function show(elm) { if (elm) elm.classList.remove("hidden"); }
-  function hide(elm) { if (elm) elm.classList.add("hidden"); }
-
-  function setText(elm, txt) { if (elm) elm.textContent = (txt ?? ""); }
-
-  function revelarBloco() {
-    if (!el.blocoTexto) return;
-    el.blocoTexto.classList.remove("show");
-    void el.blocoTexto.offsetWidth;
-    el.blocoTexto.classList.add("show");
+  function showView(sectionEl) {
+    // seu layout usa data-visible
+    sectionEl.dataset.visible = "true";
+  }
+  function hideView(sectionEl) {
+    sectionEl.dataset.visible = "false";
   }
 
-  function animarFolha(direcao) {
-    if (!el.conteudo) return;
-    el.conteudo.classList.remove("pageflip-in", "pageflip-out");
-    void el.conteudo.offsetWidth;
-    el.conteudo.classList.add(direcao === "in" ? "pageflip-in" : "pageflip-out");
-
-    clearTimeout(window.__flipTimer);
-    window.__flipTimer = setTimeout(() => {
-      el.conteudo.classList.remove("pageflip-in", "pageflip-out");
-    }, 520);
+  function openModal(modalId) {
+    const m = $(modalId);
+    if (!m) return;
+    m.hidden = false;
+    document.body.classList.add("modal-open");
+    // foca no primeiro botão de fechar (se existir)
+    const closeBtn = qs(`[data-close="${modalId}"]`, m);
+    if (closeBtn) closeBtn.focus();
   }
 
-  // =========================
-  // DATAS (corner)
-  // =========================
-  function setCornerDates() {
-    const agora = new Date();
-    const dd = String(agora.getDate()).padStart(2, "0");
-    const mm = String(agora.getMonth() + 1).padStart(2, "0");
-    const yyyy = agora.getFullYear();
-    const data = `${dd}/${mm}/${yyyy}`;
-    if (el.cornerDateLogin) el.cornerDateLogin.innerText = data;
-    if (el.cornerDate) el.cornerDate.innerText = data;
+  function closeModal(modalId) {
+    const m = $(modalId);
+    if (!m) return;
+    m.hidden = true;
+    // se não tem nenhum modal aberto, remove classe
+    const algumAberto = qsa(".modal").some(x => x.hidden === false);
+    if (!algumAberto) document.body.classList.remove("modal-open");
   }
 
-  // =========================
-  // FRASE POR HORÁRIO + RETORNO
-  // =========================
-  function aplicarFrasePorHorario() {
-    if (!el.fraseContexto) return;
-    const hora = new Date().getHours();
-    if (hora >= 5 && hora < 12) el.fraseContexto.innerText = "Que seu dia seja leve. Eu já escolhi você hoje.";
-    else if (hora >= 12 && hora < 18) el.fraseContexto.innerText = "No meio do seu dia, eu ainda penso em você.";
-    else if (hora >= 18 && hora < 23) el.fraseContexto.innerText = "Eu gosto quando você vem aqui no fim do dia.";
-    else el.fraseContexto.innerText = "Eu gosto quando você aparece antes de dormir.";
-  }
-
-  function verificarRetorno() {
-    if (!el.fraseContexto) return;
-    const hoje = new Date().toDateString();
-    const key = "projeto365_visita";
-    const ultima = localStorage.getItem(key);
-    if (ultima === hoje) {
-      el.fraseContexto.innerText += " Você voltou. Eu gosto disso.";
-    }
-    localStorage.setItem(key, hoje);
-  }
-
-  // =========================
-  // MODO TESTE UI
-  // =========================
-  function showModoTeste(diaForced) {
-    if (!el.modoTeste) return;
-    if (diaForced === null) {
-      hide(el.modoTeste);
-      el.modoTeste.textContent = "";
-      return;
-    }
-    show(el.modoTeste);
-    el.modoTeste.textContent = `Modo teste ativo: Dia ${diaForced}. (URL: ?day=${diaForced})`;
-  }
-
-  function showAvisoPoema(text) {
-    if (!el.avisoPoema) return;
-    if (!text) {
-      hide(el.avisoPoema);
-      el.avisoPoema.textContent = "";
-      return;
-    }
-    show(el.avisoPoema);
-    el.avisoPoema.textContent = text;
-  }
-
-  function detectarPrimeiroPlaceholder() {
-    // funciona com poemas.js antigo (array poemas) OU com POEMAS modular
-    try {
-      if (Array.isArray(window.poemas)) {
-        const idx = window.poemas.findIndex(p => (p || "").includes("(Em branco por enquanto)"));
-        return (idx === -1) ? null : (idx + 1);
-      }
-      if (Array.isArray(window.POEMAS)) {
-        const idx = window.POEMAS.findIndex(p => (p || "").includes("(Em branco por enquanto)"));
-        return (idx === -1) ? null : (idx + 1);
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // =========================
-  // TYPEWRITER
-  // =========================
-  let typingTimer = null;
-
-  function typeText(targetEl, text, speed = 12, onDone = null) {
-    if (!targetEl) return;
-    clearTimeout(typingTimer);
-    targetEl.textContent = "";
-    const t = String(text ?? "");
-    let i = 0;
-
-    function step() {
-      targetEl.textContent = t.slice(0, i);
-      i++;
-      if (i <= t.length) typingTimer = setTimeout(step, speed);
-      else if (typeof onDone === "function") onDone();
-    }
-    step();
-  }
-
-  function typeTextHuman(targetEl, text, opts = {}) {
-    if (!targetEl) return;
-    const {
-      minDelay = 34,
-      maxDelay = 68,
-      mistakeChance = 0.06,
-      maxBackspace = 4,
-      pauseChance = 0.05,
-      minPause = 220,
-      maxPause = 520,
-      scrollContainer = null,
-      onDone = null
-    } = opts;
-
-    clearTimeout(typingTimer);
-    targetEl.textContent = "";
-    const t = String(text ?? "");
-    let i = 0;
-
-    function rand(a, b) { return a + Math.random() * (b - a); }
-    function nextDelay() { return Math.floor(rand(minDelay, maxDelay)); }
-    function nextPause() { return Math.floor(rand(minPause, maxPause)); }
-    function doScroll() {
-      if (scrollContainer && typeof scrollContainer.scrollTop === "number") {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
-    }
-
-    function step() {
-      if (Math.random() < pauseChance) {
-        typingTimer = setTimeout(step, nextPause());
-        return;
-      }
-
-      if (i > 6 && i < t.length - 6 && Math.random() < mistakeChance) {
-        const current = targetEl.textContent;
-        const n = Math.max(1, Math.floor(rand(1, maxBackspace + 1)));
-        let j = 0;
-
-        function back() {
-          targetEl.textContent = targetEl.textContent.slice(0, -1);
-          doScroll();
-          j++;
-          if (j < Math.min(n, current.length)) typingTimer = setTimeout(back, Math.floor(rand(26, 58)));
-          else typingTimer = setTimeout(step, Math.floor(rand(90, 180)));
-        }
-        back();
-        return;
-      }
-
-      targetEl.textContent = t.slice(0, i);
-      i++;
-      doScroll();
-
-      if (i <= t.length) typingTimer = setTimeout(step, nextDelay());
-      else {
-        doScroll();
-        if (typeof onDone === "function") onDone();
-      }
-    }
-
-    step();
-  }
-
-  // =========================
-  // TOAST (inatividade + cooldown)
-  // =========================
-  function mostrarToast(texto) {
-    if (!el.toastSegredo) return;
-
-    el.toastSegredo.textContent = texto;
-
-    hide(el.toastSegredo);
-    el.toastSegredo.classList.remove("show");
-    void el.toastSegredo.offsetWidth;
-
-    show(el.toastSegredo);
-    el.toastSegredo.classList.add("show");
-
-    clearTimeout(window.__toastTimer);
-    window.__toastTimer = setTimeout(() => {
-      el.toastSegredo.classList.remove("show");
-      setTimeout(() => hide(el.toastSegredo), 250);
-    }, 4200);
-  }
-
-  function iniciarSegredo() {
-    function resetInatividade() {
-      clearTimeout(window.__inatividadeTimer);
-      window.__inatividadeTimer = setTimeout(() => {
-        if (document.hidden) return;
-
-        const last = Number(localStorage.getItem(TOAST_COOLDOWN_KEY) || 0);
-        const now = Date.now();
-
-        if (now - last >= TOAST_COOLDOWN_MS) {
-          localStorage.setItem(TOAST_COOLDOWN_KEY, String(now));
-          const texto = (typeof window.pickSegredo === "function") ? window.pickSegredo() : "";
-          if (texto) mostrarToast(texto);
-        }
-      }, TOAST_IDLE_MS);
-    }
-
-    if (window.__segredoInit) {
-      resetInatividade();
-      return;
-    }
-    window.__segredoInit = true;
-
-    window.addEventListener("mousemove", resetInatividade, { passive: true });
-    window.addEventListener("keydown", resetInatividade);
-    window.addEventListener("touchstart", resetInatividade, { passive: true });
-    window.addEventListener("scroll", resetInatividade, { passive: true });
-
-    document.addEventListener("visibilitychange", () => { if (!document.hidden) resetInatividade(); });
-    window.addEventListener("focus", resetInatividade);
-
-    resetInatividade();
-  }
-
-  // =========================
-  // INTRO DE ATO
-  // =========================
-  function introKeyForDay(dia) { return `projeto365_intro_vista_${dia}`; }
-
-  function deveMostrarIntro(dia) {
-    if (dia !== window.DIA_ATUAL) return false;
-    const map = window.INTRO_ATOS || {};
-    if (!map[dia]) return false;
-    return localStorage.getItem(introKeyForDay(dia)) !== "1";
-  }
-
-  function marcarIntroComoVista(dia) { localStorage.setItem(introKeyForDay(dia), "1"); }
-
-  function esconderIntro() {
-    if (!el.introAtoBox) return;
-    hide(el.introAtoBox);
-    setText(el.introAtoTexto, "");
-  }
-
-  function mostrarIntro(dia) {
-    const map = window.INTRO_ATOS || {};
-    const info = map[dia];
-    if (!info) return;
-
-    setText(el.introAtoTag, info.tag || "Novo Ato");
-    setText(el.introAtoTexto, info.texto || "");
-    show(el.introAtoBox);
-
-    if (el.btnContinuarAto) {
-      el.btnContinuarAto.onclick = () => {
-        marcarIntroComoVista(dia);
-        esconderIntro();
-        carregarPoema(dia);
-      };
-    }
-  }
-
-  // =========================
-  // ATO 1 — ENTRELINHAS
-  // =========================
-  function getAto1Unlocked() {
-    const key = window.ATO1_UNLOCK_KEY || "projeto365_ato1_unlock";
-    const raw = Number(localStorage.getItem(key) || 0);
-    if (!Number.isFinite(raw)) return 0;
-    return Math.max(0, Math.min(30, Math.floor(raw)));
-  }
-
-  function setAto1Unlocked(n) {
-    const key = window.ATO1_UNLOCK_KEY || "projeto365_ato1_unlock";
-    const clamped = Math.max(0, Math.min(30, Math.floor(n)));
-    localStorage.setItem(key, String(clamped));
-  }
-
-  function esconderAto1UI(silencioso = false) {
-    if (!el.ato1Chave || !el.ato1Palavra || !el.ato1Montagem) return;
-
-    hide(el.ato1Chave);
-    el.ato1Chave.setAttribute("aria-hidden", "true");
-    setText(el.ato1Palavra, "");
-
-    hide(el.ato1Montagem);
-    el.ato1Montagem.classList.remove("show", "assemble");
-    el.ato1Montagem.setAttribute("aria-hidden", "true");
-    if (!silencioso) el.ato1Montagem.innerHTML = "";
-  }
-
-  function renderAto1Palavra(diaEmTela) {
-    if (!el.ato1Chave || !el.ato1Palavra || !el.ato1Montagem) return;
-
-    if (document.body.classList.contains("modo-arquivo") ||
-        document.body.classList.contains("capsula-mode") ||
-        document.body.classList.contains("memoria-mode")) {
-      esconderAto1UI(true);
-      return;
-    }
-
-    if (diaEmTela < 1 || diaEmTela > 30) {
-      esconderAto1UI(true);
-      return;
-    }
-
-    const unlocked = getAto1Unlocked();
-    if (diaEmTela > unlocked) {
-      esconderAto1UI(true);
-      return;
-    }
-
-    const palavras = window.ATO1_PALAVRAS || [];
-    const w = palavras[diaEmTela - 1] || "";
-    setText(el.ato1Palavra, w);
-
-    hide(el.ato1Montagem);
-    el.ato1Montagem.classList.remove("show", "assemble");
-    el.ato1Montagem.setAttribute("aria-hidden", "true");
-
-    show(el.ato1Chave);
-    el.ato1Chave.setAttribute("aria-hidden", "false");
-  }
-
-  function montarAto1FraseNoCentro() {
-    if (!el.ato1Chave || !el.ato1Montagem) return;
-
-    el.ato1Montagem.innerHTML = "";
-    el.ato1Montagem.classList.remove("show", "assemble");
-
-    hide(el.ato1Chave);
-    el.ato1Chave.setAttribute("aria-hidden", "true");
-
-    const palavras = window.ATO1_PALAVRAS || [];
-    palavras.forEach((w, i) => {
-      const s = document.createElement("span");
-      s.className = "ato1Word";
-      s.textContent = w;
-      s.style.transitionDelay = `${60 + i * 28}ms`;
-      el.ato1Montagem.appendChild(s);
-    });
-
-    show(el.ato1Montagem);
-    el.ato1Montagem.setAttribute("aria-hidden", "false");
-
-    void el.ato1Montagem.offsetWidth;
-    el.ato1Montagem.classList.add("show");
-
-    clearTimeout(window.__ato1AssembleTimer);
-    window.__ato1AssembleTimer = setTimeout(() => {
-      el.ato1Montagem.classList.add("assemble");
-    }, 1100);
-  }
-
-  // =========================
-  // ATO 2/3 — SUBLINHADO + THOUGHT BOX
-  // (reaproveita seu thoughtbox do ato2 pra ato3 também)
-  // =========================
   function escapeHtml(s) {
     return String(s ?? "")
       .replaceAll("&", "&amp;")
@@ -484,29 +77,450 @@
       .replaceAll("'", "&#039;");
   }
 
+  // =========================
+  // CORE FALLBACKS (caso core.js não tenha algo)
+  // =========================
+  const START_DATE_ISO_DEFAULT = "2026-02-24"; // Dia 1
+  function getDataInicioISO() {
+    const iso = localStorage.getItem(START_OVERRIDE_KEY);
+    if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+    return START_DATE_ISO_DEFAULT;
+  }
+
+  function getForcedDayFallback() {
+    try {
+      const p = new URLSearchParams(location.search);
+      const raw = p.get("day");
+      if (!raw) return null;
+      const n = Number(raw);
+      if (Number.isFinite(n) && n >= 0 && n <= 365) return Math.floor(n);
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function diffDiasFallback() {
+    const iso = getDataInicioISO();
+    const start = new Date(iso + "T00:00:00");
+    const hoje = new Date();
+    const H = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    const I = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    return Math.floor((H - I) / (1000 * 60 * 60 * 24));
+  }
+
+  function getAtoFallback(dia) {
+    if (dia >= 1 && dia <= 30) return 1;
+    if (dia >= 31 && dia <= 90) return 2;
+    if (dia >= 91 && dia <= 150) return 3;
+    if (dia >= 151 && dia <= 240) return 4;
+    if (dia >= 241 && dia <= 330) return 5;
+    return 6;
+  }
+
+  function getFaixaAtoFallback(dia) {
+    const ato = getAtoFallback(dia);
+    if (ato === 1) return { start: 1, end: 30 };
+    if (ato === 2) return { start: 31, end: 90 };
+    if (ato === 3) return { start: 91, end: 150 };
+    if (ato === 4) return { start: 151, end: 240 };
+    if (ato === 5) return { start: 241, end: 330 };
+    return { start: 331, end: 365 };
+  }
+
+  function setTemaPorAtoFallback(dia) {
+    const ato = getAtoFallback(dia);
+    document.body.setAttribute("data-ato", String(ato));
+    // aura progress
+    const { start, end } = getFaixaAtoFallback(dia);
+    const denom = Math.max(1, (end - start));
+    const t = (dia - start) / denom;
+    const clamped = Math.max(0, Math.min(1, t));
+    document.documentElement.style.setProperty("--auraT", clamped.toFixed(4));
+
+    // ato2 gap (linhas se aproximando)
+    if (ato !== 2) {
+      document.documentElement.style.setProperty("--ato2Gap", "44px");
+    } else {
+      const aStart = 31, aEnd = 90;
+      const denom2 = Math.max(1, (aEnd - aStart));
+      const t2 = Math.max(0, Math.min(1, (dia - aStart) / denom2));
+      const gap = 44 - (34 * t2); // 44 -> 10
+      document.documentElement.style.setProperty("--ato2Gap", `${gap.toFixed(2)}px`);
+    }
+  }
+
+  function setDayAttrFallback(dia) {
+    if (Number.isFinite(dia) && dia >= 0 && dia <= 365) {
+      document.body.setAttribute("data-dia", String(dia));
+    } else {
+      document.body.removeAttribute("data-dia");
+    }
+  }
+
+  // wrappers (usa core.js se existir)
+  function getForcedDay() {
+    return (typeof window.getForcedDay === "function") ? window.getForcedDay() : getForcedDayFallback();
+  }
+  function diffDias() {
+    return (typeof window.diffDias === "function") ? window.diffDias() : diffDiasFallback();
+  }
+  function getAto(dia) {
+    return (typeof window.getAto === "function") ? window.getAto(dia) : getAtoFallback(dia);
+  }
+  function getFaixaAto(dia) {
+    return (typeof window.getFaixaAto === "function") ? window.getFaixaAto(dia) : getFaixaAtoFallback(dia);
+  }
+  function setTemaPorAto(dia) {
+    return (typeof window.setTemaPorAto === "function") ? window.setTemaPorAto(dia) : setTemaPorAtoFallback(dia);
+  }
+  function setDayAttr(dia) {
+    return (typeof window.setDayAttr === "function") ? window.setDayAttr(dia) : setDayAttrFallback(dia);
+  }
+
+  function calcularDia() {
+    // dia “real”
+    const d = diffDias();
+    let dia = d + 1;
+    if (dia < 0) dia = 0;
+    if (dia > 365) dia = 365;
+    return dia;
+  }
+
+  // =========================
+  // DOM (do teu index modular)
+  // =========================
+  const dom = {
+    // views
+    loginView: $("loginView"),
+    mainView: $("mainView"),
+
+    // login
+    loginForm: $("loginForm"),
+    senhaInput: $("senhaInput"),
+    loginMsg: $("loginMsg"),
+
+    // topo
+    titulo: $("titulo"),
+    subfrase: $("subfrase"),
+
+    // botões
+    btnArquivo: $("btnArquivo"),
+    btnMemoria: $("btnMemoria"),
+    btnSaudade: $("btnSaudade"),
+    btnSair: $("btnSair"),
+
+    // labels
+    diaLabel: $("diaLabel"),
+    atoLabel: $("atoLabel"),
+
+    // poema
+    poema: $("poema"),
+    cursor: $("cursor"),
+
+    // ato2 linhas
+    ato2Linhas: $("ato2Linhas"),
+
+    // áreas de interatividade
+    ato1Interacao: $("ato1Interacao"),
+    ato2Interacao: $("ato2Interacao"),
+
+    // toast
+    toast: $("toast"),
+
+    // modais
+    memoriaModal: $("memoriaModal"),
+    memoriaConteudo: $("memoriaConteudo"),
+
+    saudadeModal: $("saudadeModal"),
+    saudadeConteudo: $("saudadeConteudo"),
+
+    arquivoModal: $("arquivoModal"),
+    arquivoLista: $("arquivoLista"),
+    arquivoBuscar: $("arquivoBuscar"),
+    arquivoDia: $("arquivoDia"),
+    btnIrDia: $("btnIrDia"),
+  };
+
+  // =========================
+  // STATE
+  // =========================
+  let DIA_ATUAL = 1;
+  let DIA_EM_TELA = 1;
+
+  // =========================
+  // TYPEWRITER
+  // =========================
+  let typingTimer = null;
+
+  function setCursor(on) {
+    if (!dom.cursor) return;
+    dom.cursor.style.opacity = on ? "1" : "0";
+  }
+
+  function typeText(targetEl, text, speed = TYPE_SPEED, onDone = null) {
+    if (!targetEl) return;
+    clearTimeout(typingTimer);
+
+    const t = String(text ?? "");
+    targetEl.textContent = "";
+    setCursor(true);
+
+    let i = 0;
+    function step() {
+      targetEl.textContent = t.slice(0, i);
+      i++;
+      if (i <= t.length) {
+        typingTimer = setTimeout(step, speed);
+      } else {
+        setCursor(false);
+        if (typeof onDone === "function") onDone();
+      }
+    }
+    step();
+  }
+
+  // =========================
+  // FRASE CONTEXTO + RETORNO
+  // =========================
+  function aplicarFrasePorHorario() {
+    if (!dom.subfrase) return;
+    const hora = new Date().getHours();
+    if (hora >= 5 && hora < 12) dom.subfrase.textContent = "Que seu dia seja leve. Eu já escolhi você hoje.";
+    else if (hora >= 12 && hora < 18) dom.subfrase.textContent = "No meio do seu dia, eu ainda penso em você.";
+    else if (hora >= 18 && hora < 23) dom.subfrase.textContent = "Eu gosto quando você vem aqui no fim do dia.";
+    else dom.subfrase.textContent = "Eu gosto quando você aparece antes de dormir.";
+  }
+
+  function verificarRetorno() {
+    if (!dom.subfrase) return;
+    const hoje = new Date().toDateString();
+    const key = "projeto365_visita";
+    const ultima = localStorage.getItem(key);
+    if (ultima === hoje) dom.subfrase.textContent += " Você voltou. Eu gosto disso.";
+    localStorage.setItem(key, hoje);
+  }
+
+  // =========================
+  // TOAST (segredos)
+  // =========================
+  function mostrarToast(texto) {
+    if (!dom.toast) return;
+    dom.toast.textContent = texto;
+    dom.toast.classList.add("show");
+    clearTimeout(window.__toastHide);
+    window.__toastHide = setTimeout(() => dom.toast.classList.remove("show"), 4200);
+  }
+
+  function pickSegredoFallback() {
+    if (Array.isArray(window.SEGREDOS) && window.SEGREDOS.length) {
+      return window.SEGREDOS[Math.floor(Math.random() * window.SEGREDOS.length)];
+    }
+    return "";
+  }
+
+  function iniciarSegredoInatividade() {
+    function reset() {
+      clearTimeout(window.__idleTimer);
+      window.__idleTimer = setTimeout(() => {
+        if (document.hidden) return;
+
+        const last = Number(localStorage.getItem(TOAST_COOLDOWN_KEY) || 0);
+        const now = Date.now();
+        if (now - last < TOAST_COOLDOWN_MS) return;
+
+        localStorage.setItem(TOAST_COOLDOWN_KEY, String(now));
+        const txt = (typeof window.pickSegredo === "function") ? window.pickSegredo() : pickSegredoFallback();
+        if (txt) mostrarToast(txt);
+      }, TOAST_IDLE_MS);
+    }
+
+    if (window.__segredoInit) {
+      reset();
+      return;
+    }
+    window.__segredoInit = true;
+
+    window.addEventListener("mousemove", reset, { passive: true });
+    window.addEventListener("keydown", reset);
+    window.addEventListener("touchstart", reset, { passive: true });
+    window.addEventListener("scroll", reset, { passive: true });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) reset(); });
+    window.addEventListener("focus", reset);
+
+    reset();
+  }
+
+  // =========================
+  // ATO LABEL (bonitinho)
+  // =========================
+  function nomeAto(ato) {
+    if (ato === 1) return "Ato 1 — Escolha";
+    if (ato === 2) return "Ato 2 — Conexão";
+    if (ato === 3) return "Ato 3 — Fogo";
+    if (ato === 4) return "Ato 4 — Crescimento";
+    if (ato === 5) return "Ato 5 — Raiz";
+    return "Ato 6 — Recomeço";
+  }
+
+  function setMetaLabels(dia) {
+    if (dom.diaLabel) {
+      dom.diaLabel.textContent = (dia <= 0) ? "Antes do primeiro poema" : `Dia ${dia} de 365`;
+    }
+    if (dom.atoLabel) {
+      dom.atoLabel.textContent = (dia <= 0) ? "" : nomeAto(getAto(dia));
+    }
+  }
+
+  // =========================
+  // INTRO DE ATO (transição)
+  // =========================
+  function introKeyForDay(dia) { return `${INTRO_KEY_PREFIX}${dia}`; }
+
+  function deveMostrarIntro(dia) {
+    if (!window.INTRO_ATOS) return false;
+    if (!window.INTRO_ATOS[dia]) return false;
+    if (dia !== DIA_ATUAL) return false;
+    return localStorage.getItem(introKeyForDay(dia)) !== "1";
+  }
+
+  function marcarIntroComoVista(dia) {
+    localStorage.setItem(introKeyForDay(dia), "1");
+  }
+
+  function renderIntroAto(dia) {
+    const info = window.INTRO_ATOS?.[dia];
+    if (!info) return false;
+
+    // coloca o intro dentro da área ato2Interacao (fica “no meio do conteúdo”)
+    if (!dom.ato2Interacao) return false;
+
+    dom.ato2Interacao.innerHTML = `
+      <div class="intro-ato-box">
+        <div class="intro-ato-tag">${escapeHtml(info.tag || "Novo Ato")}</div>
+        <div class="intro-ato-text">${escapeHtml(info.texto || "")}</div>
+        <button type="button" id="btnContinuarIntro">Continuar</button>
+      </div>
+    `;
+
+    const btn = $("btnContinuarIntro");
+    if (btn) {
+      btn.onclick = () => {
+        marcarIntroComoVista(dia);
+        dom.ato2Interacao.innerHTML = "";
+        carregarPoema(dia);
+      };
+    }
+
+    // limpa poema enquanto intro tá ativo
+    dom.poema.textContent = "";
+    setCursor(false);
+    return true;
+  }
+
+  // =========================
+  // ATO 1 — INTERATIVIDADE
+  // =========================
+  function getAto1UnlockKey() {
+    return window.ATO1_UNLOCK_KEY || "projeto365_ato1_unlock";
+  }
+
+  function getAto1Unlocked() {
+    const raw = Number(localStorage.getItem(getAto1UnlockKey()) || 0);
+    if (!Number.isFinite(raw)) return 0;
+    return Math.max(0, Math.min(30, Math.floor(raw)));
+  }
+
+  function setAto1Unlocked(n) {
+    const v = Math.max(0, Math.min(30, Math.floor(n)));
+    localStorage.setItem(getAto1UnlockKey(), String(v));
+  }
+
+  function renderAto1Interacao(dia) {
+    if (!dom.ato1Interacao) return;
+
+    // só Ato 1
+    if (dia < 1 || dia > 30) {
+      dom.ato1Interacao.innerHTML = "";
+      return;
+    }
+
+    const unlocked = getAto1Unlocked();
+    if (dia > unlocked) {
+      dom.ato1Interacao.innerHTML = "";
+      return;
+    }
+
+    const palavras = window.ATO1_PALAVRAS || [];
+    const palavra = palavras[dia - 1] || "";
+
+    // dia 30: montagem (se já liberou 30)
+    if (dia === 30 && unlocked >= 30) {
+      const frase = palavras.map(w => `<span class="ato1-word">${escapeHtml(w)}</span>`).join(" ");
+      dom.ato1Interacao.innerHTML = `
+        <div class="ato1-box">
+          <div class="ato1-label">ENTRELINHAS</div>
+          <div class="ato1-montagem">${frase}</div>
+        </div>
+      `;
+      return;
+    }
+
+    dom.ato1Interacao.innerHTML = `
+      <div class="ato1-box">
+        <div class="ato1-label">ENTRELINHAS</div>
+        <div class="ato1-palavra">${escapeHtml(palavra)}</div>
+      </div>
+    `;
+  }
+
+  // =========================
+  // ATO 2 — LINHAS (DOM do teu index)
+  // =========================
+  function renderAto2Linhas(dia) {
+    if (!dom.ato2Linhas) return;
+
+    const ato = getAto(dia);
+    if (ato !== 2) {
+      dom.ato2Linhas.innerHTML = "";
+      dom.ato2Linhas.setAttribute("aria-hidden", "true");
+      return;
+    }
+
+    dom.ato2Linhas.setAttribute("aria-hidden", "false");
+    // deixa o CSS fazer a mágica; aqui só garante os elementos
+    if (!dom.ato2Linhas.children.length) {
+      dom.ato2Linhas.innerHTML = `
+        <div class="ato2Line"></div>
+        <div class="ato2Line"></div>
+      `;
+    }
+  }
+
+  // =========================
+  // ATO 2/3 — palavra sublinhada + pensamento
+  // =========================
   function pickUnderlineTarget(text) {
     const t = String(text || "");
 
     const candidates = [
       "presença","verdade","silêncio","calma","paz","casa","cuidado","confiança","honesto","honestidade",
       "futuro","conversar","orgulho","perto","voltar","ficar","fica","leve","luz","simples","cotidiano",
-      "detalhe","respirar","manso","seguro","aprender","desejo","pele","olhar","fogo","corpo"
+      "detalhe","respirar","manso","seguro","aprender",
+      "desejo","pele","olhar","fogo","corpo"
     ];
 
     function escRe(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-    function findWord(w) {
-      const re = new RegExp(`\\b${escRe(w)}\\b`, "i");
-      const m = t.match(re);
-      if (m && typeof m.index === "number") return { word: t.slice(m.index, m.index + m[0].length), idx: m.index };
-      return null;
-    }
 
     for (const w of candidates) {
-      const found = findWord(w);
-      if (found) return found;
+      const re = new RegExp(`\\b${escRe(w)}\\b`, "i");
+      const m = t.match(re);
+      if (m && typeof m.index === "number") {
+        return { word: t.slice(m.index, m.index + m[0].length), idx: m.index };
+      }
     }
 
-    // fallback: maior palavra “boa”
+    // fallback: maior palavra boa
     const stop = new Set(["quando","porque","ainda","mesmo","sobre","entre","depois","antes","agora","assim","isso","aquilo","muito","pouco","tudo","nunca","sempre","também","apenas","pra","para","com","sem","que","uma","um","e","o","a","os","as","no","na","nos","nas","do","da","dos","das","eu","você","voce"]);
     const rx = /[A-Za-zÀ-ÿ]{5,}/g;
     let best = null;
@@ -589,68 +603,50 @@
     return fallback[Math.floor(Math.random() * fallback.length)];
   }
 
+  function ensureThoughtBox() {
+    if (!dom.ato2Interacao) return null;
+    let box = qs("#thoughtBox", dom.ato2Interacao);
+    if (!box) {
+      dom.ato2Interacao.insertAdjacentHTML(
+        "beforeend",
+        `<div id="thoughtBox" class="thought-box" hidden></div>`
+      );
+      box = qs("#thoughtBox", dom.ato2Interacao);
+    }
+    return box;
+  }
+
   function openThought(text) {
-    if (!el.ato2ThoughtBox) return;
-    el.ato2ThoughtBox.textContent = text;
+    const box = ensureThoughtBox();
+    if (!box) return;
 
-    show(el.ato2ThoughtBox);
-    el.ato2ThoughtBox.setAttribute("aria-hidden", "false");
-
-    el.ato2ThoughtBox.classList.remove("show");
-    void el.ato2ThoughtBox.offsetWidth;
-    el.ato2ThoughtBox.classList.add("show");
+    box.textContent = text;
+    box.hidden = false;
+    box.classList.remove("show");
+    void box.offsetWidth;
+    box.classList.add("show");
 
     clearTimeout(window.__thoughtTimer);
     window.__thoughtTimer = setTimeout(() => closeThought(), 5200);
   }
 
   function closeThought() {
-    if (!el.ato2ThoughtBox) return;
-    if (el.ato2ThoughtBox.classList.contains("hidden")) return;
+    const box = ensureThoughtBox();
+    if (!box) return;
+    if (box.hidden) return;
 
-    el.ato2ThoughtBox.classList.remove("show");
+    box.classList.remove("show");
     clearTimeout(window.__thoughtTimer);
-
     setTimeout(() => {
-      hide(el.ato2ThoughtBox);
-      el.ato2ThoughtBox.setAttribute("aria-hidden", "true");
-      el.ato2ThoughtBox.textContent = "";
-    }, 180);
-  }
-
-  function esconderAto2UI(silencioso = false) {
-    if (el.ato2Linhas) {
-      hide(el.ato2Linhas);
-      el.ato2Linhas.setAttribute("aria-hidden", "true");
-    }
-    if (!silencioso) closeThought();
-  }
-
-  function renderAto2UI(dia) {
-    if (!el.ato2Linhas) return;
-
-    if (document.body.classList.contains("modo-arquivo") ||
-        document.body.classList.contains("capsula-mode") ||
-        document.body.classList.contains("memoria-mode")) {
-      esconderAto2UI(true);
-      return;
-    }
-
-    if (window.getAto(dia) !== 2) {
-      esconderAto2UI(true);
-      return;
-    }
-
-    show(el.ato2Linhas);
-    el.ato2Linhas.setAttribute("aria-hidden", "false");
+      box.hidden = true;
+      box.textContent = "";
+    }, 160);
   }
 
   function applyUnderlineThought(dia, rawText) {
-    if (!el.poema) return;
-    if (!rawText || !rawText.trim()) return;
-
-    const ato = window.getAto(dia);
+    const ato = getAto(dia);
     if (ato !== 2 && ato !== 3) return;
+    if (!rawText || !rawText.trim()) return;
 
     const target = pickUnderlineTarget(rawText);
     if (!target) return;
@@ -661,12 +657,12 @@
 
     const thought = (ato === 2)
       ? buildAto2ThoughtFromKeyword(target.word, rawText)
-      : pickAto3Thought(target.word.toLowerCase());
+      : pickAto3Thought(String(target.word).toLowerCase());
 
     const cls = (ato === 2) ? "ato2U" : "ato3U";
-    el.poema.innerHTML = `${before}<span class="${cls}" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
+    dom.poema.innerHTML = `${before}<span class="${cls}" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
 
-    const u = el.poema.querySelector(`.${cls}`);
+    const u = qs(`.${cls}`, dom.poema);
     if (u) {
       u.addEventListener("click", (e) => {
         e.preventDefault();
@@ -676,17 +672,14 @@
     }
   }
 
-  // clique fora / ESC fecha thought
+  // fecha thought clicando fora / esc
   document.addEventListener("pointerdown", (e) => {
-    if (!el.ato2ThoughtBox) return;
-    if (el.ato2ThoughtBox.classList.contains("hidden")) return;
-    if (el.ato2ThoughtBox.contains(e.target)) return;
+    const box = ensureThoughtBox();
+    if (!box || box.hidden) return;
 
-    // não fecha se clicou no sublinhado
-    if (el.poema) {
-      if (el.poema.querySelector(".ato2U")?.contains(e.target)) return;
-      if (el.poema.querySelector(".ato3U")?.contains(e.target)) return;
-    }
+    if (box.contains(e.target)) return;
+    if (dom.poema?.querySelector(".ato2U")?.contains(e.target)) return;
+    if (dom.poema?.querySelector(".ato3U")?.contains(e.target)) return;
 
     closeThought();
   }, true);
@@ -696,38 +689,121 @@
   });
 
   // =========================
-  // MODOS (arquivo/memória/cápsula)
+  // POEMA + EXTRAS
   // =========================
-  function entrarModoLista(titulo) {
-    document.body.classList.add("modo-arquivo");
-    hide(el.botoesNormal);
-    show(el.botoesArquivo);
-    hide(el.saudade);
-
-    setText(el.poema, "");
-    setText(el.meta, "");
-    esconderIntro();
-    esconderCapsulaTrigger();
-    fecharCapsulaPage(true);
-    fecharMemoriaPage(true);
-    esconderAto1UI(true);
-    esconderAto2UI(true);
-
-    setText(el.tituloTopo, titulo);
-    animarFolha("in");
+  function getPoema(dia) {
+    if (typeof window.getPoemaDoDia === "function") return window.getPoemaDoDia(dia) || "";
+    return "Ainda não carregou getPoemaDoDia().";
   }
 
-  function sairModoLista() {
-    if (document.body.classList.contains("modo-arquivo")) animarFolha("out");
-    document.body.classList.remove("modo-arquivo");
-    hide(el.arquivoBox);
-    hide(el.memoriasBox);
-    show(el.botoesNormal);
-    hide(el.botoesArquivo);
+  function getPrefacio() {
+    if (typeof window.PREFACIO === "string" && window.PREFACIO.trim()) return window.PREFACIO;
+    // fallback
+    return "Antes do primeiro dia, existe a intenção.\nNão é pressa — é constância.\n\nUm poema por dia.\nUm jeito calmo de dizer:\n“eu escolhi ficar.”";
+  }
+
+  function afterPoemTyped(dia, rawText) {
+    const forced = getForcedDay();
+    const isTest = (forced !== null);
+
+    // progresso do Ato 1 (igual o antigão)
+    if (!isTest && dia === DIA_ATUAL && dia >= 1 && dia <= 30) {
+      const cur = getAto1Unlocked();
+      if (dia > cur) setAto1Unlocked(dia);
+    }
+
+    renderAto1Interacao(dia);
+    renderAto2Linhas(dia);
+
+    // aplica underline (Ato2/Ato3) depois do type (pra não brigar com textContent)
+    applyUnderlineThought(dia, rawText);
+
+    // memórias: habilita botão
+    syncMemoriaButton();
+  }
+
+  function renderDay(dia) {
+    DIA_EM_TELA = dia;
+
+    setTemaPorAto(dia);
+    setDayAttr(dia);
+    setMetaLabels(dia);
+
+    // limpa interações “depois”
+    if (dom.ato1Interacao) dom.ato1Interacao.innerHTML = "";
+    if (dom.ato2Interacao) dom.ato2Interacao.innerHTML = "";
+    closeThought();
+    renderAto2Linhas(dia);
+
+    if (dia <= 0) {
+      typeText(dom.poema, getPrefacio(), TYPE_SPEED);
+      return;
+    }
+
+    const texto = getPoema(dia);
+    typeText(dom.poema, texto, TYPE_SPEED, () => afterPoemTyped(dia, texto));
+  }
+
+  function detectarPrimeiroPlaceholder() {
+    try {
+      // modular: window.POEMAS (opcional)
+      if (Array.isArray(window.POEMAS)) {
+        const idx = window.POEMAS.findIndex(p => (p || "").includes("(Em branco por enquanto)"));
+        return (idx === -1) ? null : (idx + 1);
+      }
+      // legado: window.poemas (opcional)
+      if (Array.isArray(window.poemas)) {
+        const idx = window.poemas.findIndex(p => (p || "").includes("(Em branco por enquanto)"));
+        return (idx === -1) ? null : (idx + 1);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function carregarHoje() {
+    const forced = getForcedDay();
+    DIA_ATUAL = (forced !== null) ? forced : calcularDia();
+
+    aplicarFrasePorHorario();
+    verificarRetorno();
+    iniciarSegredoInatividade();
+
+    // debug: avisar placeholder (só no modo teste)
+    if (forced !== null) {
+      const firstPH = detectarPrimeiroPlaceholder();
+      if (firstPH && firstPH <= 150) {
+        mostrarToast(`Aviso (teste): achei placeholder a partir do Dia ${firstPH}.`);
+      }
+    }
+
+    // unlock de ato 1 também no teste (pra você conseguir ver)
+    if (forced !== null && DIA_ATUAL >= 1 && DIA_ATUAL <= 30) {
+      const cur = getAto1Unlocked();
+      if (DIA_ATUAL > cur) setAto1Unlocked(DIA_ATUAL);
+    }
+
+    // intro de ato (uma vez no dia real)
+    if (deveMostrarIntro(DIA_ATUAL)) {
+      setTemaPorAto(DIA_ATUAL);
+      setDayAttr(DIA_ATUAL);
+      setMetaLabels(DIA_ATUAL);
+      // render intro; ao clicar continua ele chama carregarPoema
+      const ok = renderIntroAto(DIA_ATUAL);
+      if (ok) return;
+    }
+
+    renderDay(DIA_ATUAL);
+  }
+
+  function carregarPoema(dia) {
+    // usado por arquivo (abrir por dia)
+    renderDay(dia);
   }
 
   // =========================
-  // ARQUIVO: POEMAS
+  // ARQUIVO (poemas antigos)
   // =========================
   function primeiraLinha(texto) {
     if (!texto) return "Sem título";
@@ -736,429 +812,210 @@
   }
 
   function tituloParaLista(dia) {
-    const texto = (typeof window.getPoemaDoDia === "function") ? window.getPoemaDoDia(dia) : "";
+    const texto = getPoema(dia);
     let t = primeiraLinha(texto);
-    if (t.length > 52) t = t.slice(0, 52).trim() + "…";
+    if (t.length > 60) t = t.slice(0, 60).trim() + "…";
     return t;
   }
 
-  function buildRanges(maxDay) {
-    const ranges = [];
-    let start = 1;
-    while (start <= maxDay) {
-      const end = Math.min(start + 29, maxDay);
-      ranges.push({ start, end });
-      start += 30;
-    }
-    return ranges;
-  }
+  function buildArquivoList(maxDay) {
+    if (!dom.arquivoLista) return;
+    dom.arquivoLista.innerHTML = "";
 
-  function renderRangeButtons(max) {
-    if (!el.rangeRow || !el.listaArquivo) return;
+    // lista do mais recente pro mais antigo
+    for (let d = maxDay; d >= 1; d--) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "arquivo-item";
+      item.dataset.day = String(d);
 
-    el.rangeRow.innerHTML = "";
-    const ranges = buildRanges(max);
+      item.innerHTML = `
+        <div class="arquivo-item-dia">Dia ${d}</div>
+        <div class="arquivo-item-titulo">${escapeHtml(tituloParaLista(d))}</div>
+      `;
 
-    function renderList(start, end) {
-      el.listaArquivo.innerHTML = "";
-      for (let d = end; d >= start; d--) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "arquivoItem";
-        btn.innerHTML =
-          `<span class="arquivoDia">Dia ${d}</span>
-           <span class="arquivoTitulo">${escapeHtml(tituloParaLista(d))}</span>`;
-        btn.onclick = () => {
-          sairModoLista();
-          esconderIntro();
-          carregarPoema(d);
-        };
-        el.listaArquivo.appendChild(btn);
-      }
-    }
-
-    ranges.forEach((r) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "rangeBtn";
-      b.textContent = `${r.start}–${r.end}`;
-      b.onclick = () => {
-        [...el.rangeRow.querySelectorAll(".rangeBtn")].forEach(x => x.classList.remove("active"));
-        b.classList.add("active");
-        renderList(r.start, r.end);
+      item.onclick = () => {
+        closeModal("arquivoModal");
+        carregarPoema(d);
       };
-      el.rangeRow.appendChild(b);
+
+      dom.arquivoLista.appendChild(item);
+    }
+  }
+
+  function filtrarArquivo(query) {
+    if (!dom.arquivoLista) return;
+    const q = String(query || "").trim().toLowerCase();
+    const items = qsa(".arquivo-item", dom.arquivoLista);
+
+    if (!q) {
+      items.forEach(i => i.hidden = false);
+      return;
+    }
+
+    items.forEach((i) => {
+      const dia = i.dataset.day || "";
+      const titulo = qs(".arquivo-item-titulo", i)?.textContent || "";
+      const match = (dia.includes(q) || titulo.toLowerCase().includes(q));
+      i.hidden = !match;
     });
-
-    const last = ranges[ranges.length - 1];
-    if (last) {
-      el.rangeRow.lastChild.classList.add("active");
-      renderList(last.start, last.end);
-    }
   }
 
-  window.abrirArquivo = function abrirArquivo() {
-    if (window.DIA_ATUAL <= 1) return;
-
-    const max = window.DIA_ATUAL - 1;
-    if (el.arquivoSub) el.arquivoSub.innerText = `Disponíveis: Dias 1 a ${max}`;
-
-    show(el.arquivoBox);
-    hide(el.memoriasBox);
-
-    window.setTemaPorAto(window.DIA_ATUAL);
-    window.setDayAttr(window.DIA_ATUAL);
-
-    entrarModoLista("Arquivo");
-    renderRangeButtons(max);
-  };
-
-  // =========================
-  // ARQUIVO: MEMÓRIAS
-  // =========================
-  function getMemoryDays() {
-    const days = [];
-    for (let d = 30; d <= 330; d += 30) days.push(d);
-    return days;
+  function abrirArquivoModal() {
+    // só mostra dias anteriores ao atual (igual teu “antigão”)
+    const max = Math.max(1, Math.min(365, DIA_ATUAL - 1));
+    buildArquivoList(max);
+    if (dom.arquivoBuscar) dom.arquivoBuscar.value = "";
+    if (dom.arquivoDia) dom.arquivoDia.value = "";
+    openModal("arquivoModal");
   }
 
-  function memoriaTituloPorIndice(idx) { return `Memória ${idx + 1}`; }
+  // =========================
+  // MEMÓRIA (modal)
+  // =========================
+  function isMemoryDay(d) {
+    return d > 0 && d % 30 === 0 && d !== 365;
+  }
 
-  window.abrirMemorias = function abrirMemorias() {
-    const days = getMemoryDays();
-    if (el.memoriasSub) el.memoriasSub.innerText = `Total previsto: ${days.length}`;
+  function syncMemoriaButton() {
+    if (!dom.btnMemoria) return;
 
-    if (el.listaMemorias) el.listaMemorias.innerHTML = "";
+    // habilita quando já existe alguma memória liberada (>=30)
+    dom.btnMemoria.disabled = (DIA_ATUAL < 30);
+  }
 
-    days.forEach((diaMem, idx) => {
-      const liberada = (window.DIA_ATUAL >= diaMem);
-      const icon = liberada ? "🔓" : "🔒";
-      const titulo = memoriaTituloPorIndice(idx);
+  function abrirMemoriaModal() {
+    if (!dom.memoriaConteudo) return;
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "arquivoItem memoriaItem";
-      btn.innerHTML =
-        `<span class="lockIcon">${icon}</span>
-         <span class="arquivoDia">Dia ${diaMem}</span>
-         <span class="arquivoTitulo">${escapeHtml(titulo)}</span>`;
-
-      btn.onclick = () => abrirMemoriaPage(diaMem, idx);
-      el.listaMemorias.appendChild(btn);
-    });
-
-    window.setTemaPorAto(window.DIA_ATUAL);
-    window.setDayAttr(window.DIA_ATUAL);
-
-    hide(el.arquivoBox);
-    show(el.memoriasBox);
-    entrarModoLista("Memórias");
-  };
-
-  function abrirMemoriaPage(diaMem, idx) {
-    const liberada = (window.DIA_ATUAL >= diaMem);
-    const titulo = memoriaTituloPorIndice(idx);
-
-    setText(el.memoriaPaperTitle, titulo);
-
-    if (!liberada) {
-      setText(el.memoriaPaperMeta, `Bloqueada até o Dia ${diaMem}.`);
-      setText(el.memoriaPageTexto, `Quando chegar o Dia ${diaMem}, essa memória vai abrir — e vai ficar disponível pra sempre.`);
-    } else {
-      setText(el.memoriaPaperMeta, `Liberada no Dia ${diaMem}.`);
-      const texto = (typeof window.getMemoriaDoDia === "function") ? window.getMemoriaDoDia(diaMem) : "";
-      const conteudo = texto && texto.trim().length ? texto : "Em breve...";
-      setText(el.memoriaPageTexto, "");
-      typeText(el.memoriaPageTexto, conteudo, 12);
+    // se hoje é dia de memória (30/60/90/120/150...) e já chegou, mostra a memória do dia
+    if (isMemoryDay(DIA_ATUAL)) {
+      const texto = (typeof window.getMemoriaDoDia === "function") ? (window.getMemoriaDoDia(DIA_ATUAL) || "") : "";
+      dom.memoriaConteudo.textContent = texto && texto.trim() ? texto : "Em breve...";
+      openModal("memoriaModal");
+      return;
     }
 
-    show(el.memoriaPage);
-    el.memoriaPage.setAttribute("aria-hidden", "false");
-    document.body.classList.add("memoria-mode");
-
-    if (el.btnMemoriaVoltar) el.btnMemoriaVoltar.onclick = () => fecharMemoriaPage();
-    el.memoriaPage.scrollTop = 0;
-  }
-
-  function fecharMemoriaPage(silencioso = false) {
-    if (!silencioso && el.memoriaPage?.classList.contains("hidden")) return;
-    hide(el.memoriaPage);
-    el.memoriaPage?.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("memoria-mode");
-    if (el.memoriaPageTexto) el.memoriaPageTexto.textContent = "";
-  }
-
-  // =========================
-  // DIA 365 — CÁPSULA
-  // =========================
-  function esconderCapsulaTrigger() { hide(el.capsulaTrigger); }
-  function mostrarCapsulaTrigger() {
-    show(el.capsulaTrigger);
-    if (el.btnAbrirCapsula) el.btnAbrirCapsula.onclick = () => abrirCapsulaPage();
-  }
-
-  function abrirCapsulaPage() {
-    localStorage.setItem(CAPSULA_OPEN_KEY, "1");
-
-    if (el.capsulaCarta) el.capsulaCarta.textContent = "";
-    hide(el.capsulaFecho);
-
-    show(el.capsulaPage);
-    el.capsulaPage?.setAttribute("aria-hidden", "false");
-    document.body.classList.add("capsula-mode");
-    el.capsulaPage.scrollTop = 0;
-
-    if (el.notebook) {
-      el.notebook.classList.remove("open");
-      void el.notebook.offsetWidth;
-      el.notebook.classList.add("open");
+    // se não é dia de memória: mostra a última liberada
+    const last = Math.floor(DIA_ATUAL / 30) * 30;
+    if (last >= 30) {
+      const texto = (typeof window.getMemoriaDoDia === "function") ? (window.getMemoriaDoDia(last) || "") : "";
+      dom.memoriaConteudo.innerHTML =
+        `<div class="muted" style="margin-bottom:10px;">Hoje não é dia de memória. Última liberada: Dia ${last}.</div>` +
+        `<div style="white-space:pre-wrap;">${escapeHtml(texto && texto.trim() ? texto : "Em breve...")}</div>`;
+      openModal("memoriaModal");
+      return;
     }
 
-    if (el.btnCapsulaVoltar) el.btnCapsulaVoltar.onclick = () => fecharCapsulaPage();
-    if (el.btnEscolherDeNovo) el.btnEscolherDeNovo.onclick = () => escolherDeNovo();
+    dom.memoriaConteudo.textContent = "A primeira memória libera no Dia 30.";
+    openModal("memoriaModal");
+  }
 
-    clearTimeout(window.__capsulaStartTimer);
-    window.__capsulaStartTimer = setTimeout(() => {
-      const carta = (typeof window.getCartaCapsula365 === "function") ? window.getCartaCapsula365() : "";
-      typeTextHuman(el.capsulaCarta, carta || "Em breve...", {
-        minDelay: 38,
-        maxDelay: 82,
-        mistakeChance: 0.075,
-        maxBackspace: 4,
-        pauseChance: 0.07,
-        minPause: 260,
-        maxPause: 760,
-        scrollContainer: el.capsulaPage,
-        onDone: () => {
-          show(el.capsulaFecho);
-          el.capsulaPage.scrollTop = el.capsulaPage.scrollHeight;
+  // =========================
+  // SAUDADE (modal)
+  // =========================
+  function abrirSaudadeModal() {
+    if (dom.saudadeConteudo) {
+      dom.saudadeConteudo.style.whiteSpace = "pre-wrap";
+      dom.saudadeConteudo.textContent = SAUDADE_TEXTO;
+    }
+    openModal("saudadeModal");
+  }
+
+  // =========================
+  // LOGIN + LOGOUT
+  // =========================
+  function entrar() {
+    hideView(dom.loginView);
+    showView(dom.mainView);
+    carregarHoje();
+  }
+
+  function sair() {
+    // limpa só o “estado de sessão” (não apaga progressos do projeto)
+    hideView(dom.mainView);
+    showView(dom.loginView);
+    if (dom.senhaInput) dom.senhaInput.value = "";
+    if (dom.loginMsg) dom.loginMsg.textContent = "";
+    // opcional: fecha modais
+    ["memoriaModal", "saudadeModal", "arquivoModal"].forEach(closeModal);
+  }
+
+  // =========================
+  // EVENTS
+  // =========================
+  function bindEvents() {
+    // login submit
+    if (dom.loginForm) {
+      dom.loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const senha = (dom.senhaInput?.value || "").trim();
+
+        if (senha === SENHA_CORRETA) {
+          if (dom.loginMsg) dom.loginMsg.textContent = "";
+          entrar();
+        } else {
+          if (dom.loginMsg) dom.loginMsg.textContent = "Senha incorreta.";
         }
       });
-    }, 640);
-  }
-
-  function fecharCapsulaPage(silencioso = false) {
-    if (!silencioso && el.capsulaPage?.classList.contains("hidden")) return;
-    hide(el.capsulaPage);
-    el.capsulaPage?.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("capsula-mode");
-    clearTimeout(window.__capsulaStartTimer);
-  }
-
-  function clearProjeto365Storage() {
-    const keys = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith("projeto365_")) keys.push(k);
-    }
-    keys.forEach(k => localStorage.removeItem(k));
-  }
-
-  function escolherDeNovo() {
-    if (!el.fadeOverlay) return;
-
-    el.fadeOverlay.classList.add("show");
-
-    setTimeout(() => {
-      setTimeout(() => {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, "0");
-        const d = String(now.getDate()).padStart(2, "0");
-        const iso = `${y}-${m}-${d}`;
-
-        clearProjeto365Storage();
-        localStorage.setItem(START_OVERRIDE_KEY, iso);
-
-        el.fadeOverlay.classList.remove("show");
-        fecharCapsulaPage(true);
-        carregarHoje();
-      }, 1000);
-    }, 3000);
-  }
-
-  // =========================
-  // SAUDADE
-  // =========================
-  window.mostrarSaudade = function mostrarSaudade() {
-    if (el.saudade) el.saudade.classList.toggle("hidden");
-  };
-
-  // =========================
-  // LOGIN
-  // =========================
-  window.verificarSenha = function verificarSenha() {
-    const senha = el.senha ? el.senha.value : "";
-    if (senha === SENHA_CORRETA) {
-      hide(el.login);
-      show(el.conteudo);
-      setCornerDates();
-      carregarHoje();
-    } else {
-      alert("Senha incorreta.");
-    }
-  };
-
-  // =========================
-  // RENDER PRINCIPAL
-  // =========================
-  function afterPoemTyped(dia, rawText) {
-    const forced = (typeof window.getForcedDay === "function") ? window.getForcedDay() : null;
-    const isTest = (forced !== null);
-
-    // progresso ato 1 (só no dia real)
-    if (!isTest && dia === window.DIA_ATUAL && dia >= 1 && dia <= 30) {
-      const current = getAto1Unlocked();
-      if (dia > current) setAto1Unlocked(dia);
     }
 
-    renderAto1Palavra(dia);
-    if (dia === 30 && getAto1Unlocked() >= 30) {
-      clearTimeout(window.__ato1FinalTimer);
-      window.__ato1FinalTimer = setTimeout(() => montarAto1FraseNoCentro(), 480);
-    }
+    // botões topo
+    if (dom.btnArquivo) dom.btnArquivo.addEventListener("click", abrirArquivoModal);
+    if (dom.btnMemoria) dom.btnMemoria.addEventListener("click", abrirMemoriaModal);
+    if (dom.btnSaudade) dom.btnSaudade.addEventListener("click", abrirSaudadeModal);
+    if (dom.btnSair) dom.btnSair.addEventListener("click", sair);
 
-    renderAto2UI(dia);
-    applyUnderlineThought(dia, rawText);
-  }
+    // fechar modais via data-close
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const close = t.getAttribute("data-close");
+      if (close) closeModal(close);
+    });
 
-  function carregarPoema(dia) {
-    DIA_EM_TELA = dia;
+    // ESC fecha modais
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      // fecha o último modal aberto que achar
+      const aberto = qsa(".modal").filter(m => m.hidden === false);
+      if (!aberto.length) return;
+      const last = aberto[aberto.length - 1];
+      closeModal(last.id);
+    });
 
-    revelarBloco();
-
-    window.setTemaPorAto(dia);
-    window.setDayAttr(dia);
-
-    esconderCapsulaTrigger();
-    fecharCapsulaPage(true);
-    fecharMemoriaPage(true);
-    esconderAto1UI(true);
-    esconderAto2UI(true);
-    esconderIntro();
-
-    // Prefácio (antes do Dia 1)
-    if (dia <= 0) {
-      document.body.removeAttribute("data-ato");
-      document.body.removeAttribute("data-dia");
-      document.documentElement.style.setProperty("--auraT", "0");
-
-      setText(el.tituloTopo, "Antes do primeiro poema");
-      setText(el.meta, "");
-      const textoPrefacio = (typeof window.PREFACIO !== "undefined" && window.PREFACIO) ? window.PREFACIO : "Em breve.";
-      typeText(el.poema, textoPrefacio, 14);
-      return;
-    }
-
-    // Fora do range
-    if (dia > 365) {
-      setText(el.tituloTopo, "365 dias com você");
-      setText(el.meta, "E mesmo assim, eu ainda escolheria você de novo.");
-      typeText(el.poema, "Fim de um ano.\nE o começo de tudo de novo.", 12);
-      return;
-    }
-
-    // Dia 365
-    if (dia === 365) {
-      setText(el.tituloTopo, `Dia 365 de 365`);
-      setText(el.meta, "Um poema por dia.");
-
-      const poema365 = (typeof window.getPoemaDoDia === "function") ? window.getPoemaDoDia(365) : "";
-      typeText(el.poema, poema365 || "Em breve...", 12, () => {
-        mostrarCapsulaTrigger();
+    // arquivo: busca
+    if (dom.arquivoBuscar) {
+      dom.arquivoBuscar.addEventListener("input", () => {
+        filtrarArquivo(dom.arquivoBuscar.value);
       });
-      return;
     }
 
-    // Normal
-    setText(el.tituloTopo, `Dia ${dia} de 365`);
-    setText(el.meta, "Um poema por dia.");
-
-    const texto = (typeof window.getPoemaDoDia === "function") ? window.getPoemaDoDia(dia) : "Em breve...";
-    typeText(el.poema, texto, 12, () => afterPoemTyped(dia, texto));
+    // arquivo: ir pro dia
+    if (dom.btnIrDia) {
+      dom.btnIrDia.addEventListener("click", () => {
+        const n = Number(dom.arquivoDia?.value || "");
+        if (!Number.isFinite(n) || n < 1 || n > 365) {
+          mostrarToast("Escolhe um dia válido (1–365).");
+          return;
+        }
+        closeModal("arquivoModal");
+        carregarPoema(Math.floor(n));
+      });
+    }
   }
-
-  function carregarHoje() {
-    const forced = (typeof window.getForcedDay === "function") ? window.getForcedDay() : null;
-    showModoTeste(forced);
-
-    // aviso placeholder: só no modo teste
-    if (forced !== null) {
-      const firstPH = detectarPrimeiroPlaceholder();
-      if (firstPH && firstPH <= 120) {
-        showAvisoPoema(`Aviso: encontrei placeholder a partir do Dia ${firstPH}. (isso geralmente é desalinhamento de poemas no arquivo de poemas)`);
-        console.warn("Projeto365: primeiro placeholder no Dia", firstPH);
-      } else {
-        showAvisoPoema("");
-      }
-    } else {
-      showAvisoPoema("");
-    }
-
-    // DIA_ATUAL vem do core.js
-    window.DIA_ATUAL = (typeof window.calcularDia === "function")
-      ? window.calcularDia()
-      : 1;
-
-    // em modo teste, também atualiza progresso ato 1 (igual seu antigão)
-    if (forced !== null && window.DIA_ATUAL >= 1 && window.DIA_ATUAL <= 30) {
-      const cur = getAto1Unlocked();
-      if (window.DIA_ATUAL > cur) setAto1Unlocked(window.DIA_ATUAL);
-    }
-
-    aplicarFrasePorHorario();
-    verificarRetorno();
-    iniciarSegredo();
-
-    // botão anteriores desabilitado quando não tem anterior
-    const btnAnteriores = document.getElementById("btnAnteriores");
-    if (btnAnteriores) btnAnteriores.disabled = (window.DIA_ATUAL <= 1);
-
-    sairModoLista();
-
-    // se antes do início, mostra dia 0 (prefácio)
-    if (typeof window.diffDias === "function") {
-      const d = window.diffDias();
-      if (d < 0) {
-        carregarPoema(window.DIA_ATUAL);
-        return;
-      }
-    }
-
-    // intro do ato (somente no dia real)
-    if (deveMostrarIntro(window.DIA_ATUAL)) {
-      revelarBloco();
-      setText(el.tituloTopo, `Dia ${window.DIA_ATUAL} de 365`);
-      setText(el.poema, "");
-      setText(el.meta, "");
-
-      window.setTemaPorAto(window.DIA_ATUAL);
-      window.setDayAttr(window.DIA_ATUAL);
-
-      esconderCapsulaTrigger();
-      fecharCapsulaPage(true);
-      fecharMemoriaPage(true);
-      esconderAto1UI(true);
-      esconderAto2UI(true);
-
-      mostrarIntro(window.DIA_ATUAL);
-      return;
-    }
-
-    carregarPoema(window.DIA_ATUAL);
-  }
-
-  window.voltarParaHoje = function voltarParaHoje() {
-    carregarHoje();
-  };
 
   // =========================
   // BOOT
   // =========================
   function boot() {
-    setCornerDates();
-    setInterval(setCornerDates, 60000);
-    // Não auto-login: mantém o gate com senha, como no antigão.
+    bindEvents();
+
+    // inicial: deixa login visível, main escondido (como teu HTML)
+    // mas se você estiver em modo teste (?day=), ainda assim exige senha (igual teu apego emocional)
+    syncMemoriaButton();
+
+    // se você quiser auto-entrar em dev, descomenta isso:
+    // if (location.hostname === "localhost") entrar();
   }
 
   boot();
