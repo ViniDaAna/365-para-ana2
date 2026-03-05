@@ -1,110 +1,152 @@
-// DATA DE INÍCIO DO PROJETO
-const DATA_INICIO = new Date("2026-02-24T00:00:00");
+// js/core.js
+// Núcleo do Projeto 365
+// - data de início (com override)
+// - modo teste (?day=)
+// - cálculo de dia (0..365)
+// - ato / faixa do ato
+// - data-ato, data-dia
+// - aura progressiva (--auraT)
+// - Ato 2: linhas se aproximando (--ato2Gap)
 
-let DIA_ATUAL = 1;
+(function () {
+  "use strict";
 
+  // ===== CONFIG =====
+  const DATA_INICIO_PADRAO = new Date("2026-02-24T00:00:00");
+  const START_OVERRIDE_KEY = "projeto365_start_override";
 
-// =============================
-// CALCULAR DIFERENÇA DE DIAS
-// =============================
-function diffDias(){
+  // expõe DIA_ATUAL como no seu antigão
+  window.DIA_ATUAL = 1;
 
-const hoje = new Date();
+  // =============================
+  // MODO TESTE: /?day=60
+  // =============================
+  window.getForcedDay = function getForcedDay() {
+    try {
+      const p = new URLSearchParams(location.search);
+      const raw = p.get("day");
+      if (!raw) return null;
+      const n = Number(raw);
+      if (Number.isFinite(n) && n >= 0 && n <= 365) return Math.floor(n);
+      return null;
+    } catch (e) {
+      return null;
+    }
+  };
 
-const H = new Date(
-hoje.getFullYear(),
-hoje.getMonth(),
-hoje.getDate()
-);
+  // =============================
+  // DATA INÍCIO (override)
+  // =============================
+  window.getDataInicio = function getDataInicio() {
+    try {
+      const iso = localStorage.getItem(START_OVERRIDE_KEY);
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+        return new Date(iso + "T00:00:00");
+      }
+    } catch (e) {}
+    return DATA_INICIO_PADRAO;
+  };
 
-const I = new Date(
-DATA_INICIO.getFullYear(),
-DATA_INICIO.getMonth(),
-DATA_INICIO.getDate()
-);
+  // =============================
+  // DIFERENÇA DE DIAS
+  // =============================
+  window.diffDias = function diffDias() {
+    const dataInicio = window.getDataInicio();
+    const hoje = new Date();
 
-return Math.floor((H - I) / (1000*60*60*24));
+    const H = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+    const I = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
 
-}
+    return Math.floor((H - I) / (1000 * 60 * 60 * 24));
+  };
 
+  // =============================
+  // ATO / FAIXA
+  // =============================
+  window.getAto = function getAto(dia) {
+    if (dia >= 1 && dia <= 30) return 1;
+    if (dia >= 31 && dia <= 90) return 2;
+    if (dia >= 91 && dia <= 150) return 3;
+    if (dia >= 151 && dia <= 240) return 4;
+    if (dia >= 241 && dia <= 330) return 5;
+    return 6;
+  };
 
-// =============================
-// CALCULAR DIA ATUAL
-// =============================
-function calcularDia(){
+  window.getFaixaAto = function getFaixaAto(dia) {
+    const ato = window.getAto(dia);
+    if (ato === 1) return { start: 1, end: 30 };
+    if (ato === 2) return { start: 31, end: 90 };
+    if (ato === 3) return { start: 91, end: 150 };
+    if (ato === 4) return { start: 151, end: 240 };
+    if (ato === 5) return { start: 241, end: 330 };
+    return { start: 331, end: 365 };
+  };
 
-const d = diffDias();
+  // =============================
+  // AURA PROGRESSIVA
+  // =============================
+  window.setAuraProgress = function setAuraProgress(dia) {
+    if (!Number.isFinite(dia) || dia < 1) {
+      document.documentElement.style.setProperty("--auraT", "0");
+      return;
+    }
 
-DIA_ATUAL = d + 1;
+    const { start, end } = window.getFaixaAto(dia);
+    const denom = Math.max(1, (end - start));
+    const t = (dia - start) / denom;
+    const clamped = Math.max(0, Math.min(1, t));
 
-if(DIA_ATUAL < 1) DIA_ATUAL = 0;
+    document.documentElement.style.setProperty("--auraT", clamped.toFixed(4));
+  };
 
-if(DIA_ATUAL > 365) DIA_ATUAL = 365;
+  // =============================
+  // ATO 2 — PROGRESSO DAS LINHAS
+  // (gap 44px -> 10px)
+  // =============================
+  window.setAto2Progress = function setAto2Progress(dia) {
+    if (window.getAto(dia) !== 2) {
+      document.documentElement.style.setProperty("--ato2Gap", "44px");
+      return;
+    }
 
-return DIA_ATUAL;
+    const start = 31, end = 90;
+    const denom = Math.max(1, (end - start));
+    const t = Math.max(0, Math.min(1, (dia - start) / denom));
+    const gap = 44 - (34 * t);
 
-}
+    document.documentElement.style.setProperty("--ato2Gap", `${gap.toFixed(2)}px`);
+  };
 
+  // =============================
+  // TEMA + ATRIBUTOS
+  // =============================
+  window.setTemaPorAto = function setTemaPorAto(dia) {
+    document.body.setAttribute("data-ato", String(window.getAto(dia)));
+    window.setAuraProgress(dia);
+    window.setAto2Progress(dia);
+  };
 
-// =============================
-// IDENTIFICAR ATO
-// =============================
-function getAto(dia){
+  window.setDayAttr = function setDayAttr(dia) {
+    if (dia >= 1 && dia <= 365) document.body.setAttribute("data-dia", String(dia));
+    else document.body.removeAttribute("data-dia");
+  };
 
-if(dia >= 1 && dia <= 30) return 1;
+  // =============================
+  // CALCULAR DIA ATUAL (0..365)
+  // =============================
+  window.calcularDia = function calcularDia() {
+    const forced = window.getForcedDay();
+    if (forced !== null) {
+      window.DIA_ATUAL = forced;
+      return window.DIA_ATUAL;
+    }
 
-if(dia >= 31 && dia <= 90) return 2;
+    const d = window.diffDias();
+    window.DIA_ATUAL = d + 1;
 
-if(dia >= 91 && dia <= 150) return 3;
+    if (window.DIA_ATUAL < 1) window.DIA_ATUAL = 0;
+    if (window.DIA_ATUAL > 365) window.DIA_ATUAL = 365;
 
-if(dia >= 151 && dia <= 240) return 4;
-
-if(dia >= 241 && dia <= 330) return 5;
-
-return 6;
-
-}
-
-
-// =============================
-// DEFINIR TEMA DO ATO
-// =============================
-function aplicarAto(dia){
-
-const ato = getAto(dia);
-
-document.body.setAttribute("data-ato", ato);
-
-}
-
-
-// =============================
-// PROGRESSO DA AURA
-// =============================
-function setAura(dia){
-
-const ato = getAto(dia);
-
-let start = 1;
-let end = 30;
-
-if(ato === 2){ start = 31; end = 90; }
-
-if(ato === 3){ start = 91; end = 150; }
-
-if(ato === 4){ start = 151; end = 240; }
-
-if(ato === 5){ start = 241; end = 330; }
-
-if(ato === 6){ start = 331; end = 365; }
-
-const denom = Math.max(1,(end-start));
-
-const t = (dia-start)/denom;
-
-const clamped = Math.max(0,Math.min(1,t));
-
-document.documentElement.style
-.setProperty("--auraT", clamped);
-
-}
+    return window.DIA_ATUAL;
+  };
+})();
