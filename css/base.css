@@ -2,23 +2,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Parisienne&display=swap');
 
 :root{
+  /* base */
   --bg:#0d0d0f;
   --bg2:#141416;
 
   --panel: rgba(20,20,22,0.86);
+  --panel2: rgba(0,0,0,0.18);
+
   --text:#f1e9dc;
   --muted: rgba(241,233,220,0.65);
 
   --line: rgba(241,233,220,0.14);
-
-  /* Aura dinâmica (JS vai setar) */
-  --auraT: 0;      /* 0 → 1 */
-  --auraMin: 0.10;
-  --auraMax: 0.28;
-  --auraColor: rgba(212,175,55,1);
-  --auraOpacity: calc(var(--auraMin) + (var(--auraT) * (var(--auraMax) - var(--auraMin))));
+  --lineStrong: rgba(241,233,220,0.22);
 
   --radius: 18px;
+
+  /* sombras */
+  --shadow: 0 14px 50px rgba(0,0,0,0.55);
+  --shadowSoft: 0 12px 40px rgba(0,0,0,0.35);
+
+  /* acento (muda por ato no atos.css) */
+  --accent: #d4af37;
+
+  /* ato2 gap (JS seta) */
+  --ato2Gap: 44px;
 }
 
 *{ box-sizing:border-box; }
@@ -31,43 +38,64 @@ body{
   margin:0;
   font-family: "Cormorant Garamond", serif;
   color: var(--text);
-  background: radial-gradient(1200px 900px at 50% 20%,
-      rgba(212,175,55, calc(var(--auraOpacity))) 0%,
-      rgba(0,0,0,0) 60%),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-  transition: background 420ms ease;
+
+  /* Fundo base (aura fica no atos.css via ::before) */
+  background:
+    radial-gradient(1200px 800px at 50% 12%, rgba(255,255,255,0.045), transparent 70%),
+    radial-gradient(900px 700px at 20% 78%, rgba(255,255,255,0.02), transparent 60%),
+    linear-gradient(180deg, var(--bg), #0a0a0c 60%, #060608);
+
+  overflow-x:hidden;
 }
 
+/* overlay sutil (igual teu style antigo, mas leve) */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.03), transparent 12%, transparent 88%, rgba(255,255,255,0.03)),
+    radial-gradient(1000px 720px at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 74%);
+}
+
+/* app acima do fundo */
 #app{
+  position:relative;
+  z-index:1;
   min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  padding: 22px 14px 46px;
 }
 
-#titulo{
-  margin: 18px 0 18px;
-  font-weight: 500;
-  letter-spacing: .5px;
-  text-align:center;
-  opacity:.92;
+/* texto padrão */
+.muted{ color: var(--muted); }
+
+/* seleção */
+::selection{
+  background: rgba(212,175,55,0.20);
+  color: rgba(241,233,220,0.95);
 }
 
-#poema{
-  width: min(820px, 92vw);
-  background: var(--panel);
-  border: 1px solid rgba(241,233,220,0.12);
-  border-radius: var(--radius);
-  padding: 26px 22px;
-  line-height: 1.9;
-  font-size: 20px;
-  text-align:center;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.35);
-  white-space: pre-wrap;
+/* acessibilidade */
+.sr-only{
+  position:absolute !important;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
 }
 
-@media (max-width:520px){
-  #poema{ font-size:18px; padding:22px 18px; }
+/* links neutros */
+a{ color: inherit; }
+
+/* reduzir animações pra quem pede */
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
