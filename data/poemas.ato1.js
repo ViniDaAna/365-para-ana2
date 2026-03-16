@@ -1,9 +1,4 @@
-// data/poemas.ato1.js
-// Ato 1 — Escolha (Dias 1–30)
-// Index 0 => Dia 1
-
-(function(){
-  window.POEMAS_ATO_1 = [
+const POEMAS_ATO_1 = [
 `Te amei ontem.
 
 Nos dias em que a gente ainda estava aprendendo a ser dois.
@@ -382,5 +377,4 @@ Porque amar você
 não é impulso.
 
 É decisão renovada.`
-  ];
-})();
+];
