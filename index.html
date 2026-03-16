@@ -1,270 +1,212 @@
 ===== index.html =====
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Entre Nós Dois</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entre Nós Dois</title>
 
-<link rel="icon" href="data:," />
-
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/atos.css">
-
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="css/base.css?v=20260316_fiel" />
+  <link rel="stylesheet" href="css/layout.css?v=20260316_fiel" />
+  <link rel="stylesheet" href="css/atos.css?v=20260316_fiel" />
 </head>
 
 <body>
 
-<div class="container" id="login">
-  <h1 class="title">Um Lugar Só Nosso</h1>
-  <div class="thin-line"></div>
-  <p class="subtitle">Digite a data que tudo começou</p>
+  <!-- LOGIN -->
+  <div class="container" id="login">
+    <div class="corner-date" id="cornerDateLogin"></div>
 
-  <input type="password" id="senha" placeholder="Senha"/>
-  <br>
-  <button onclick="verificarSenha()">Entrar</button>
+    <h1 class="title">Um Lugar Só Nosso</h1>
+    <div class="thin-line"></div>
+    <p class="subtitle">Digite a data que tudo começou</p>
 
-  <div class="meta">Dica: o dia em que a gente virou “nós”.</div>
-</div>
+    <input type="password" id="senha" placeholder="Senha" />
+    <br />
+    <button type="button" onclick="verificarSenha()">Entrar</button>
 
-<div class="container hidden" id="conteudo">
-
-  <h2 id="tituloTopo" class="title"></h2>
-  <div class="thin-line"></div>
-
-  <div id="blocoTexto" class="fade">
-    <div class="poema" id="poema"></div>
-    <div class="meta" id="meta"></div>
+    <div class="meta">Dica: o dia em que a gente virou “nós”.</div>
   </div>
 
-  <div class="btnRow">
-    <button onclick="carregarHoje()">Recarregar</button>
+  <!-- CONTEÚDO -->
+  <div class="container hidden" id="conteudo">
+    <div class="corner-date" id="cornerDate"></div>
+
+    <div id="fraseContexto" class="meta" style="margin-top:4px;"></div>
+    <div id="modoTeste" class="meta hidden" style="margin-top:6px; opacity:.9;"></div>
+
+    <!-- aviso automático quando detectar placeholder cedo -->
+    <div id="avisoPoema" class="meta hidden" style="margin-top:8px; opacity:.95;"></div>
+
+    <h2 id="tituloTopo" class="title"></h2>
+    <div class="thin-line"></div>
+
+    <div id="blocoTexto" class="fade">
+
+      <!-- INTRODUÇÃO DE ATO -->
+      <div id="introAtoBox" class="extra hidden">
+        <div class="extraTag" id="introAtoTag">Novo Ato</div>
+        <div class="extraTexto" id="introAtoTexto"></div>
+        <button class="btnIntro" id="btnContinuarAto" type="button">Continuar</button>
+      </div>
+
+      <!-- ===== ATO 2 — LINHAS (31–90) ===== -->
+      <div id="ato2Linhas" class="ato2Lines hidden" aria-hidden="true">
+        <div class="ato2Line"></div>
+        <div class="ato2Line"></div>
+      </div>
+      <div id="ato2ThoughtBox" class="ato2Thought hidden" aria-hidden="true"></div>
+      <!-- ===== /ATO 2 ===== -->
+
+      <!-- POEMA / TEXTO PRINCIPAL -->
+      <div class="poema" id="poema"></div>
+      <div class="meta" id="meta"></div>
+
+      <!-- ===== ATO 1 — ENTRELINHAS (1–30) ===== -->
+      <div id="ato1Chave" class="ato1Chave hidden" aria-hidden="true">
+        <div class="ato1Label">ENTRELINHAS</div>
+        <div class="ato1PalavraWrap">
+          <span id="ato1Palavra" class="ato1Palavra"></span>
+        </div>
+      </div>
+
+      <!-- Dia 30: montagem da frase no centro -->
+      <div id="ato1Montagem" class="ato1Montagem hidden" aria-hidden="true"></div>
+      <!-- ===== /ATO 1 ===== -->
+
+      <!-- ===== DIA 365 — GATILHO DA CÁPSULA ===== -->
+      <div id="capsulaTrigger" class="capsulaTrigger hidden">
+        <div class="capsulaTitle">Cápsula do tempo.</div>
+        <div class="capsulaMeta">Escrita em 23/02/2025.</div>
+        <button id="btnAbrirCapsula" class="btnCapsula" type="button">Abrir</button>
+      </div>
+      <!-- ===== /DIA 365 ===== -->
+
+      <!-- ARQUIVO: POEMAS -->
+      <div id="arquivoBox" class="arquivoBox hidden">
+        <div class="arquivoHeader">
+          <button class="ghostBtn" type="button" onclick="voltarParaHoje()">Voltar</button>
+
+          <div class="arquivoHeaderText">
+            <div class="titleSmall">Poemas anteriores</div>
+            <div class="metaSmall" id="arquivoSub">—</div>
+          </div>
+
+          <div style="width:72px;"></div>
+        </div>
+
+        <div class="thin-line" style="margin-top:18px;"></div>
+
+        <div class="rangeRow" id="rangeRow"></div>
+
+        <div id="listaArquivo" class="arquivoLista"></div>
+      </div>
+
+      <!-- ARQUIVO: MEMÓRIAS -->
+      <div id="memoriasBox" class="arquivoBox hidden">
+        <div class="arquivoHeader">
+          <button class="ghostBtn" type="button" onclick="voltarParaHoje()">Voltar</button>
+
+          <div class="arquivoHeaderText">
+            <div class="titleSmall">Memórias</div>
+            <div class="metaSmall" id="memoriasSub">—</div>
+          </div>
+
+          <div style="width:72px;"></div>
+        </div>
+
+        <div class="thin-line" style="margin-top:18px;"></div>
+
+        <div id="listaMemorias" class="arquivoLista"></div>
+      </div>
+
+    </div>
+
+    <!-- Botões (normal) -->
+    <div class="btnRow" id="botoesNormal">
+      <button id="btnAnteriores" type="button" onclick="abrirArquivo()">Poemas anteriores</button>
+      <button id="btnMemorias" type="button" onclick="abrirMemorias()">Memórias</button>
+      <button type="button" onclick="mostrarSaudade()">Clique aqui quando estiver com saudade</button>
+    </div>
+
+    <!-- Botões (modo arquivo/memórias) -->
+    <div class="btnRow hidden" id="botoesArquivo">
+      <button class="ghostBtn" type="button" onclick="voltarParaHoje()">Voltar para o dia de hoje</button>
+    </div>
+
+    <div id="saudade" class="saudade hidden">
+      Se você sentiu saudade, é porque o que temos é real.
+      E eu escolho você — hoje e todos os dias.
+    </div>
+
+    <div class="assinatura">Entre nós dois.</div>
+
+    <!-- ===== PÁGINA DA CÁPSULA (overlay) ===== -->
+    <div id="capsulaPage" class="capsulaPage hidden" aria-hidden="true">
+      <div class="capsulaTopbar">
+        <button class="ghostBtn capsulaBack" id="btnCapsulaVoltar" type="button">Voltar</button>
+        <div class="capsulaTopbarTitle">Cápsula do Tempo</div>
+        <div style="width:72px;"></div>
+      </div>
+
+      <div class="notebook" id="notebook">
+        <div class="notebookCover"></div>
+
+        <div class="notebookPaper">
+          <div class="capsulaPaperHeader">
+            <div class="capsulaPaperTitle">Carta – Cápsula do Tempo</div>
+            <div class="capsulaPaperDate">23/02/2025</div>
+          </div>
+
+          <div id="capsulaCarta" class="capsulaCarta cursiva"></div>
+
+          <div id="capsulaFecho" class="capsulaFecho hidden">
+            <div class="capsulaLine"></div>
+            <div class="capsulaDecidi">23/02/2025 — Eu decidi.</div>
+            <button id="btnEscolherDeNovo" class="btnEscolherDeNovo" type="button">Escolher de novo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== /PÁGINA DA CÁPSULA ===== -->
+
+    <!-- OVERLAY MEMÓRIA -->
+    <div id="memoriaPage" class="memoriaPage hidden" aria-hidden="true">
+      <div class="memoriaTopbar">
+        <button class="ghostBtn memoriaBack" id="btnMemoriaVoltar" type="button">Voltar</button>
+        <div class="memoriaTopbarTitle">Memória</div>
+        <div style="width:72px;"></div>
+      </div>
+
+      <div class="memoriaPaper">
+        <div class="memoriaPaperHeader">
+          <div class="memoriaPaperTitle" id="memoriaPaperTitle">—</div>
+          <div class="memoriaPaperMeta" id="memoriaPaperMeta">—</div>
+        </div>
+
+        <div id="memoriaPageTexto" class="memoriaPageTexto"></div>
+      </div>
+    </div>
+    <!-- /OVERLAY MEMÓRIA -->
+
   </div>
 
-</div>
+  <!-- Toast -->
+  <div id="toastSegredo" class="toast hidden" aria-live="polite"></div>
 
-<script src="data/prefacio.js"></script>
-<script src="data/memorias.js"></script>
-<script src="data/capsula365.js"></script>
-<script src="data/segredos.js"></script>
-<script src="data/poemas.ato1.js"></script>
-<script src="data/poemas.ato2.js"></script>
-<script src="data/poemas.index.js"></script>
+  <!-- Overlay de fade final (Dia 365) -->
+  <div id="fadeOverlay" class="fadeOverlay" aria-hidden="true"></div>
 
-<script src="js/core.js"></script>
-<script src="js/app.js"></script>
-
+  <script src="data/prefacio.js?v=20260316_fiel"></script>
+  <script src="data/memorias.js?v=20260316_fiel"></script>
+  <script src="data/segredos.js?v=20260316_fiel"></script>
+  <script src="data/capsula365.js?v=20260316_fiel"></script>
+  <script src="data/poemas.ato1.js?v=20260316_fiel"></script>
+  <script src="data/poemas.ato2.js?v=20260316_fiel"></script>
+  <script src="data/poemas.index.js?v=20260316_fiel"></script>
+  <script src="js/core.js?v=20260316_fiel"></script>
+  <script src="js/app.js?v=20260316_fiel"></script>
 </body>
 </html>
-
-
-===== css/base.css =====
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Parisienne&display=swap');
-
-:root{
---bg:#0d0d0f;
---panel:rgba(20,20,22,0.86);
---text:#f1e9dc;
---gold:#d4af37;
-}
-
-*{box-sizing:border-box;}
-
-body{
-margin:0;
-font-family:"Cormorant Garamond",serif;
-color:var(--text);
-background:#0d0d0f;
-}
-
-.hidden{display:none !important;}
-
-
-===== css/layout.css =====
-
-.container{
-width:min(900px,92vw);
-margin:40px auto;
-padding:28px;
-border-radius:18px;
-background:rgba(20,20,22,0.86);
-box-shadow:0 10px 40px rgba(0,0,0,0.5);
-}
-
-.title{
-text-align:center;
-color:#d4af37;
-font-size:32px;
-}
-
-.subtitle{
-text-align:center;
-color:rgba(241,233,220,0.7);
-}
-
-.poema{
-white-space:pre-wrap;
-text-align:center;
-font-size:22px;
-line-height:1.8;
-}
-
-.meta{
-text-align:center;
-margin-top:12px;
-opacity:0.7;
-}
-
-button{
-padding:10px 16px;
-border-radius:14px;
-border:1px solid rgba(255,255,255,0.1);
-background:rgba(0,0,0,0.25);
-color:white;
-cursor:pointer;
-}
-
-
-===== css/atos.css =====
-
-body[data-ato="1"]{ --accent:#d4af37; }
-body[data-ato="2"]{ --accent:#7fb2ff; }
-body[data-ato="3"]{ --accent:#c2465a; }
-body[data-ato="4"]{ --accent:#94c7ff; }
-body[data-ato="5"]{ --accent:#c89a7b; }
-body[data-ato="6"]{ --accent:#d4af37; }
-
-
-===== data/prefacio.js =====
-
-const PREFACIO = `Antes do primeiro dia, existe a intenção.
-Um poema por dia.
-Um jeito calmo de dizer: eu escolhi ficar.`;
-
-
-===== data/memorias.js =====
-
-const MEMORIAS = {
-30:`Memória do Dia 30.`,
-60:`Memória do Dia 60.`,
-90:`Memória do Dia 90.`
-};
-
-function getMemoriaDoDia(dia){
-return MEMORIAS[dia] || "";
-}
-
-
-===== data/poemas.ato1.js =====
-
-const POEMAS_ATO1=[
-`Te amei ontem.
-Te amo hoje.
-E escolho te amar para sempre.`,
-`Amar você não é impulso.
-É permanência.`
-];
-
-
-===== data/poemas.ato2.js =====
-
-const POEMAS_ATO2=[
-`Eu gosto quando você aparece.`,
-`Com você o silêncio não assusta.`
-];
-
-
-===== data/poemas.index.js =====
-
-const POEMAS=[...POEMAS_ATO1,...POEMAS_ATO2];
-
-function getPoemaDoDia(dia){
-if(dia===365) return POEMA_365;
-return POEMAS[dia-1]||"(Em branco por enquanto)";
-}
-
-
-===== data/segredos.js =====
-
-const SEGREDOS=[
-"Eu ainda estou aqui.",
-"Você chegou. Eu já respirei melhor.",
-"Eu escolho você."
-];
-
-
-===== data/capsula365.js =====
-
-const POEMA_365 = `Te amei ontem.
-Te amo hoje.
-E amanhã… continuo escolhendo você.`;
-
-const CARTA_CAPSULA_365 = `Carta – Cápsula do Tempo
-23/02/2025
-
-Se você está lendo isso,
-significa que eu consegui ficar.`;
-
-function getCartaCapsula365(){
-return CARTA_CAPSULA_365;
-}
-
-
-===== js/core.js =====
-
-function getAto(dia){
-if(dia<=30) return 1;
-if(dia<=90) return 2;
-if(dia<=150) return 3;
-if(dia<=240) return 4;
-if(dia<=330) return 5;
-return 6;
-}
-
-
-===== js/app.js =====
-
-const senhaCorreta="10022024";
-const dataInicio=new Date("2026-02-24");
-
-let DIA_ATUAL=1;
-
-function diffDias(){
-const hoje=new Date();
-return Math.floor((hoje-dataInicio)/(1000*60*60*24));
-}
-
-function carregarPoema(dia){
-const titulo=document.getElementById("tituloTopo");
-const poemaEl=document.getElementById("poema");
-const meta=document.getElementById("meta");
-
-titulo.innerText=`Dia ${dia} de 365`;
-meta.innerText="Um poema por dia.";
-poemaEl.textContent=getPoemaDoDia(dia);
-}
-
-function carregarHoje(){
-DIA_ATUAL=diffDias()+1;
-if(DIA_ATUAL<1){
-document.getElementById("poema").textContent=PREFACIO;
-return;
-}
-carregarPoema(DIA_ATUAL);
-}
-
-function verificarSenha(){
-const senha=document.getElementById("senha").value;
-if(senha===senhaCorreta){
-document.getElementById("login").classList.add("hidden");
-document.getElementById("conteudo").classList.remove("hidden");
-carregarHoje();
-}else{
-alert("Senha incorreta");
-}
-}
 
