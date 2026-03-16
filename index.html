@@ -1,4 +1,3 @@
-===== index.html =====
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -62,6 +61,18 @@
       <!-- POEMA / TEXTO PRINCIPAL -->
       <div class="poema" id="poema"></div>
       <div class="meta" id="meta"></div>
+
+      <!-- ===== ATO 4 — PUZZLE (151–240) ===== -->
+      <div id="ato4Puzzle" class="ato4Puzzle hidden" aria-hidden="true">
+        <div class="ato4PuzzleTitle">Uma parte de nós.</div>
+
+        <div class="ato4Grid" id="ato4Grid">
+          <!-- peças serão geradas pelo JS -->
+        </div>
+
+        <div class="ato4Hint" id="ato4Hint">toque para revelar</div>
+      </div>
+      <!-- ===== /ATO 4 ===== -->
 
       <!-- ===== ATO 1 — ENTRELINHAS (1–30) ===== -->
       <div id="ato1Chave" class="ato1Chave hidden" aria-hidden="true">
@@ -206,8 +217,9 @@
   <script src="data/poemas.ato2.js?v=20260316_fiel"></script>
   <script src="data/poemas.ato3.js?v=20260316_fiel"></script>
   <script src="data/poemas.index.js?v=20260316_fiel"></script>
+  <script src="data/puzzle.ato4.js?v=20260316_fiel"></script>
+  <script src="data/interacoes.ato4.js?v=20260316_fiel"></script>
   <script src="js/core.js?v=20260316_fiel"></script>
   <script src="js/app.js?v=20260316_fiel"></script>
 </body>
 </html>
-
