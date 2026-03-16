@@ -263,7 +263,7 @@ function sairModoLista(){
 
 function primeiraLinha(texto){
   if(!texto) return "Sem título";
-  const linha = String(texto).split("\\n")[0].trim();
+  const linha = String(texto).split("\n")[0].trim();
   return linha || "Sem título";
 }
 
@@ -629,11 +629,13 @@ function pickUnderlineTarget(text){
   const candidates = [
     "presença","verdade","silêncio","calma","paz","casa","cuidado","confiança","honesto","honestidade",
     "futuro","conversar","orgulho","perto","voltar","ficar","fica","leve","luz","simples","cotidiano",
-    "detalhe","respirar","manso","seguro","aprender"
+    "detalhe","respirar","manso","seguro","aprender","calor","segredos","tensão","energia","curiosidade",
+    "desejo","linha","corpos","proximidade","promessa","fogo","escolha"
   ];
 
   function findWord(w){
-    const re = new RegExp(`\\b${w.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}\\b`, "i");
+    const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`\\b${escaped}\\b`, "i");
     const m = t.match(re);
     if(m && typeof m.index === "number") return {word: t.slice(m.index, m.index + m[0].length), idx: m.index};
     return null;
@@ -758,31 +760,49 @@ function closeAto2Thought(){
   }, 180);
 }
 
-function pickAto3Thought(keyword){
-  const map = {
-    "desejo":"amar você também é desejar você.",
-    "perto":"quando você chega perto o mundo fica menor.",
-    "pele":"tem algo na sua pele que acende tudo aqui.",
-    "olhar":"seu olhar às vezes me desmonta.",
-    "fogo":"eu tento parecer calmo… mas por dentro pega fogo.",
-    "respirar":"tem horas que eu esqueço de respirar direito perto de você.",
-    "silêncio":"o silêncio entre nós também é intensidade.",
-    "silencio":"o silêncio entre nós também é intensidade.",
-    "corpo":"às vezes eu sinto você antes mesmo de tocar."
+function buildAto3ThoughtFromKeyword(keywordRaw, day){
+  const k = (keywordRaw || "").toLowerCase();
+
+  const discovery = {
+    "calor":"— tem coisas em você que aquecem tudo sem esforço.",
+    "segredos":"— acho que o ar entre nós já sabe antes da gente.",
+    "fogo":"— ainda é começo, mas eu já sinto.",
+    "perto":"— quando você chega perto, fica difícil fingir calma.",
+    "silêncio":"— até o silêncio muda de temperatura.",
+    "olhar":"— seu olhar sempre demora um pouco mais do que devia.",
+    "curiosidade":"— às vezes o desejo começa assim: querendo entender mais.",
+    "energia":"— tem algo entre nós que já não sabe mais se esconder."
   };
 
-  for(const k in map){
-    if(keyword.includes(k)) return map[k];
+  const tension = {
+    "tensão":"— eu percebo o quanto tudo muda quando você se aproxima.",
+    "energia":"— o espaço entre nós está cheio demais de intenção.",
+    "perto":"— parte de mim quer diminuir ainda mais essa distância.",
+    "linha":"— a vontade mora exatamente nessa beira.",
+    "corpos":"— nossos corpos entendem coisas que a boca ainda não diz.",
+    "proximidade":"— eu noto quando a proximidade deixa de ser acaso.",
+    "desejo":"— o desejo cresce quieto, mas ocupa tudo."
+  };
+
+  const surrender = {
+    "escolha":"— o mais bonito é saber que isso não nasceu do impulso.",
+    "promessa":"— o que era tensão agora começa a virar caminho.",
+    "fogo":"— não é pressa; é entrega no tempo certo.",
+    "perto":"— eu já não quero fugir do que sinto quando você está perto.",
+    "desejo":"— agora já não parece dúvida; parece verdade.",
+    "silêncio":"— até o silêncio entre nós parece aceitar.",
+    "calor":"— esse calor já não assusta; ele só confirma."
+  };
+
+  const current = day <= 110 ? discovery : day <= 130 ? tension : surrender;
+
+  for(const key in current){
+    if(k.includes(key)) return current[key];
   }
 
-  const fallback = [
-    "às vezes o que eu sinto por você passa do que cabe em silêncio.",
-    "tem algo em você que acende tudo aqui dentro.",
-    "eu tento parecer calmo… mas por dentro pega fogo.",
-    "tem coisas que eu sinto por você que nem poesia explica."
-  ];
-
-  return fallback[Math.floor(Math.random()*fallback.length)];
+  if(day <= 110) return "— tem coisas começando a arder em silêncio.";
+  if(day <= 130) return "— às vezes eu quase deixo transparecer demais.";
+  return "— depois de certo ponto, sentir também vira escolha.";
 }
 
 function applyAto3Underline(dia, rawText){
@@ -797,7 +817,7 @@ function applyAto3Underline(dia, rawText){
   const word = escapeHtml(target.word);
   const after = escapeHtml(rawText.slice(target.idx + target.word.length));
 
-  const thought = pickAto3Thought(target.word.toLowerCase());
+  const thought = buildAto3ThoughtFromKeyword(target.word, dia);
 
   poemaEl.innerHTML =
   `${before}<span class="ato3U" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
@@ -907,7 +927,7 @@ function carregarPoema(dia){
   if(dia > 365){
     tituloTopo.innerText = "365 dias com você";
     metaEl.innerText = "E mesmo assim, eu ainda escolheria você de novo.";
-    typeText(poemaEl, "Fim de um ano.\\nE o começo de tudo de novo.", 12);
+    typeText(poemaEl, "Fim de um ano.\nE o começo de tudo de novo.", 12);
     return;
   }
 
@@ -935,7 +955,7 @@ function carregarHoje(){
 
   if(forced !== null){
     const firstPH = detectarPrimeiroPlaceholder();
-    if(firstPH && firstPH <= 120){
+    if(firstPH && firstPH <= 160){
       showAvisoPoema(`Aviso: encontrei placeholder a partir do Dia ${firstPH}.`);
       console.warn("Projeto365: primeiro placeholder no Dia", firstPH);
     } else {
