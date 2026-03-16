@@ -1,46 +1,26 @@
-// data/poemas.index.js
-(function () {
-  const POEMAS = new Array(365).fill(null);
+const POEMAS = new Array(365).fill("");
 
-  function fillRange(startDia, arr) {
-    for (let i = 0; i < arr.length; i++) {
-      const dia = startDia + i;
-      const idx = dia - 1;
-      if (idx >= 0 && idx < 365) {
-        POEMAS[idx] = String(arr[i] ?? "").trim();
-      }
-    }
-  }
+for(let i = 0; i < POEMAS_ATO_1.length; i++){
+  POEMAS[i] = POEMAS_ATO_1[i];
+}
 
-  if (Array.isArray(window.POEMAS_ATO_1)) fillRange(1, window.POEMAS_ATO_1);
-  if (Array.isArray(window.POEMAS_ATO_2)) fillRange(31, window.POEMAS_ATO_2);
-  if (Array.isArray(window.POEMAS_ATO_3)) fillRange(91, window.POEMAS_ATO_3);
-  if (Array.isArray(window.POEMAS_ATO_4)) fillRange(151, window.POEMAS_ATO_4);
-  if (Array.isArray(window.POEMAS_ATO_5)) fillRange(241, window.POEMAS_ATO_5);
-  if (Array.isArray(window.POEMAS_ATO_6)) fillRange(331, window.POEMAS_ATO_6);
+for(let i = 0; i < POEMAS_ATO_2.length; i++){
+  POEMAS[30 + i] = POEMAS_ATO_2[i];
+}
 
-  function placeholder(dia) {
-    return `Dia ${dia}
+for(let i = 90; i < 364; i++){
+  if(!POEMAS[i]){
+    POEMAS[i] =
+`Dia ${i + 1}
 
 (Em branco por enquanto)
 
-Se você está vendo isso, é porque esse poema ainda não foi escrito no arquivo do ato correspondente.`;
+Se você está vendo isso, é porque esse poema ainda não foi escrito no projeto modular.`;
   }
+}
 
-  // ✅ Sanity: garante que Dia 29/30 nunca "somem" por buraco de array
-  for (let d = 1; d <= 365; d++) {
-    if (!POEMAS[d - 1] || !String(POEMAS[d - 1]).trim()) {
-      POEMAS[d - 1] = placeholder(d);
-    }
-  }
-
-  function getPoemaDoDia(dia) {
-    const d = Number(dia);
-    if (!Number.isFinite(d)) return "Em breve...";
-    if (d <= 0) return (window.PREFACIO || "Em breve.");
-    if (d > 365) return POEMAS[364] || placeholder(365);
-    return POEMAS[d - 1] || placeholder(d);
-  }
-
-  window.getPoemaDoDia = getPoemaDoDia;
-})();
+function getPoemaDoDia(dia){
+  if(dia < 1 || dia > 365) return "Em breve...";
+  if(dia === 365) return POEMA_365;
+  return POEMAS[dia - 1] || "Em breve...";
+}
