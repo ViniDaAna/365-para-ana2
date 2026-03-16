@@ -1,4 +1,4 @@
-const POEMAS_ATO1 = [
+const POEMAS_ATO_1 = [
 
 `Te amei ontem.
 
@@ -379,6 +379,39 @@ não é impulso.
 
 É decisão renovada.`,
 
-];
+`Eu não quero competir com o tempo.
+Quero construir com ele.
 
-export { POEMAS_ATO1 };
+Porque amar você não me dá vontade de correr.
+Me dá vontade de permanecer.
+
+E permanecer, pra mim,
+é uma das formas mais bonitas de dizer
+que encontrei onde quero estar.`,
+
+`O amor mais forte
+não é o que explode.
+É o que sustenta.
+
+É o que continua
+mesmo quando o dia é comum,
+mesmo quando o mundo pesa,
+mesmo quando ninguém está olhando.
+
+E o que eu sinto por você
+tem esse tipo de força:
+a que fica.`,
+
+`Hoje eu só queria te lembrar
+que, entre tudo que muda,
+entre tudo que passa,
+entre tudo que assusta,
+
+tem uma coisa que segue firme em mim:
+
+a decisão de te amar.
+
+Sem pressa.
+Sem espetáculo.
+Mas com verdade.`
+];
