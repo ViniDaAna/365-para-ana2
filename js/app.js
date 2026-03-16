@@ -245,6 +245,7 @@ function entrarModoLista(titulo){
   fecharMemoriaPage(true);
   esconderAto1UI(true);
   esconderAto2UI(true);
+  esconderAto4UI(true);
 
   document.getElementById("tituloTopo").innerText = titulo;
   animarFolha("in");
@@ -614,6 +615,23 @@ function esconderAto2UI(silencioso=false){
   cleanupAto2Closer();
 }
 
+function esconderAto4UI(silencioso=false){
+  const box = document.getElementById("ato4Puzzle");
+  const grid = document.getElementById("ato4Grid");
+  const hint = document.getElementById("ato4Hint");
+
+  if(!box || !grid || !hint) return;
+
+  box.classList.add("hidden");
+  box.setAttribute("aria-hidden","true");
+  box.classList.remove("is-complete");
+
+  if(!silencioso){
+    grid.innerHTML = "";
+    hint.textContent = "";
+  }
+}
+
 function escapeHtml(s){
   return String(s)
     .replaceAll("&","&amp;")
@@ -873,6 +891,114 @@ function renderAto2UI(dia){
   linhas.setAttribute("aria-hidden","false");
 }
 
+function getAto4PuzzleBgPosition(piece, gridSize){
+  const cols = Math.max(1, gridSize - 1);
+  const x = cols === 0 ? 0 : (piece.col / cols) * 100;
+  const y = cols === 0 ? 0 : (piece.row / cols) * 100;
+  return `${x}% ${y}%`;
+}
+
+function renderAto4Puzzle(dia){
+  const box = document.getElementById("ato4Puzzle");
+  const grid = document.getElementById("ato4Grid");
+  const hint = document.getElementById("ato4Hint");
+
+  if(!box || !grid || !hint){
+    return;
+  }
+
+  if(
+    document.body.classList.contains("modo-arquivo") ||
+    document.body.classList.contains("capsula-mode") ||
+    document.body.classList.contains("memoria-mode")
+  ){
+    esconderAto4UI(true);
+    return;
+  }
+
+  if(getAto(dia) !== 4 || typeof getAto4PuzzleConfig !== "function" || !isAto4PuzzleDay(dia)){
+    esconderAto4UI(true);
+    return;
+  }
+
+  const cfg = getAto4PuzzleConfig();
+  const state = getAto4PuzzleState();
+  const currentPieceIndex = getAto4PuzzlePieceIndexByDay(dia);
+  const currentAlreadyRevealed = !!state[currentPieceIndex];
+
+  box.classList.remove("hidden");
+  box.setAttribute("aria-hidden","false");
+  grid.innerHTML = "";
+  grid.style.setProperty("--ato4-grid-size", String(cfg.gridSize || 4));
+
+  cfg.pecas.forEach((piece, idx) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ato4Piece";
+    btn.setAttribute("aria-label", `Peça ${idx + 1} do quebra-cabeça`);
+
+    const isRevealed = !!state[idx];
+    const isCurrent = idx === currentPieceIndex;
+    const isLocked = !isRevealed && !isCurrent;
+
+    btn.style.setProperty("--piece-row", String(piece.row));
+    btn.style.setProperty("--piece-col", String(piece.col));
+    btn.style.backgroundImage = `url("${cfg.image}")`;
+    btn.style.backgroundSize = `${cfg.gridSize * 100}% ${cfg.gridSize * 100}%`;
+    btn.style.backgroundPosition = getAto4PuzzleBgPosition(piece, cfg.gridSize);
+
+    if(isRevealed){
+      btn.classList.add("is-revealed");
+      btn.disabled = true;
+    } else if(isCurrent){
+      btn.classList.add("is-current");
+      if(!currentAlreadyRevealed){
+        btn.title = cfg.hintAntes || "toque para revelar";
+        btn.onclick = () => {
+          revealAto4PuzzlePiece(idx);
+          renderAto4Puzzle(dia);
+        };
+      } else {
+        btn.classList.add("is-revealed");
+        btn.disabled = true;
+      }
+    } else if(isLocked){
+      btn.classList.add("is-locked");
+      btn.disabled = true;
+      btn.style.backgroundImage = "none";
+    }
+
+    const inner = document.createElement("span");
+    inner.className = "ato4PieceInner";
+
+    if(isRevealed || (isCurrent && currentAlreadyRevealed)){
+      inner.textContent = "";
+      btn.classList.add("is-revealed");
+    } else if(isCurrent){
+      inner.textContent = "revelar";
+    } else {
+      inner.textContent = "";
+    }
+
+    btn.appendChild(inner);
+    grid.appendChild(btn);
+  });
+
+  const total = cfg.pecas.length;
+  const abertas = countAto4PuzzleRevealed();
+  const completo = isAto4PuzzleComplete();
+
+  box.classList.toggle("is-complete", completo);
+
+  if(completo){
+    hint.textContent = cfg.fraseFinal || "Peça por peça, fomos construindo algo que hoje eu chamo de nós.";
+  } else if(currentAlreadyRevealed){
+    hint.textContent = `${cfg.hintDepois || "mais uma peça da nossa história."} (${abertas}/${total})`;
+  } else {
+    hint.textContent = `${cfg.hintAntes || "toque para revelar"} (${abertas}/${total})`;
+  }
+}
+
 function afterPoemTyped(dia, rawText){
   const forced = getForcedDay();
   const isTest = (forced !== null);
@@ -893,6 +1019,7 @@ function afterPoemTyped(dia, rawText){
   renderAto2UI(dia);
   applyAto2Underline(dia, rawText);
   applyAto3Underline(dia, rawText);
+  renderAto4Puzzle(dia);
 }
 
 function carregarPoema(dia){
@@ -912,6 +1039,7 @@ function carregarPoema(dia){
   fecharMemoriaPage(true);
   esconderAto1UI(true);
   esconderAto2UI(true);
+  esconderAto4UI(true);
 
   if(dia <= 0){
     document.body.removeAttribute("data-ato");
@@ -990,6 +1118,7 @@ function carregarHoje(){
       fecharMemoriaPage(true);
       esconderAto1UI(true);
       esconderAto2UI(true);
+      esconderAto4UI(true);
       mostrarIntro(DIA_ATUAL);
       return;
     }
@@ -1030,6 +1159,7 @@ function carregarHoje(){
     fecharMemoriaPage(true);
     esconderAto1UI(true);
     esconderAto2UI(true);
+    esconderAto4UI(true);
     mostrarIntro(DIA_ATUAL);
     return;
   }
