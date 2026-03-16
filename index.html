@@ -1,193 +1,270 @@
+===== index.html =====
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Entre Nós Dois</title>
 
-  <title>Entre Nós Dois</title>
-  <link rel="icon" href="data:," />
+<link rel="icon" href="data:," />
 
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/atos.css" />
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/atos.css">
+
 </head>
 
 <body>
-  <div id="app">
 
-    <!-- ============================= -->
-    <!-- LOGIN (GATE) -->
-    <!-- ============================= -->
-    <section id="loginView" class="view" aria-label="Entrada" data-visible="true">
-      <div class="panel login-panel">
-        <h1 id="tituloLogin">Entre nós dois.</h1>
+<div class="container" id="login">
+  <h1 class="title">Um Lugar Só Nosso</h1>
+  <div class="thin-line"></div>
+  <p class="subtitle">Digite a data que tudo começou</p>
 
-        <p class="muted" id="loginHint">
-          Digite a senha para entrar.
-        </p>
+  <input type="password" id="senha" placeholder="Senha"/>
+  <br>
+  <button onclick="verificarSenha()">Entrar</button>
 
-        <form id="loginForm" autocomplete="off">
-          <label class="sr-only" for="senhaInput">Senha</label>
-          <input
-            id="senhaInput"
-            name="senha"
-            type="password"
-            inputmode="numeric"
-            placeholder="Senha"
-            autocomplete="off"
-            aria-label="Senha"
-          />
-          <button id="btnEntrar" type="submit">Entrar</button>
-        </form>
+  <div class="meta">Dica: o dia em que a gente virou “nós”.</div>
+</div>
 
-        <p id="loginMsg" class="muted" role="status" aria-live="polite"></p>
-      </div>
-    </section>
+<div class="container hidden" id="conteudo">
 
-    <!-- ============================= -->
-    <!-- CONTEÚDO -->
-    <!-- ============================= -->
-    <section id="mainView" class="view" aria-label="Conteúdo" data-visible="false">
-      <header class="topbar">
-        <div class="topbar-left">
-          <h1 id="titulo">Entre nós dois.</h1>
-          <p id="subfrase" class="muted" aria-live="polite"></p>
-        </div>
+  <h2 id="tituloTopo" class="title"></h2>
+  <div class="thin-line"></div>
 
-        <div class="topbar-right">
-          <button id="btnArquivo" type="button" aria-haspopup="dialog" aria-controls="arquivoModal">
-            Ler poemas antigos
-          </button>
-          <button id="btnMemoria" type="button" aria-haspopup="dialog" aria-controls="memoriaModal" disabled>
-            Memória
-          </button>
-          <button id="btnSaudade" type="button" aria-haspopup="dialog" aria-controls="saudadeModal">
-            Aperte em mim quando tiver com sdd
-          </button>
-          <button id="btnSair" type="button" class="ghost">
-            Sair
-          </button>
-        </div>
-      </header>
-
-      <!-- Ganchos para o Ato 2 (linhas se aproximando) -->
-      <div id="ato2Linhas" aria-hidden="true"></div>
-
-      <main class="content">
-        <div class="meta">
-          <span id="diaLabel" class="muted"></span>
-          <span id="atoLabel" class="muted"></span>
-        </div>
-
-        <!-- POEMA -->
-        <article id="poemaWrap" class="poema-wrap">
-          <div id="poema" aria-live="polite"></div>
-
-          <!-- cursor do typewriter (se você usar) -->
-          <span id="cursor" aria-hidden="true"></span>
-        </article>
-
-        <!-- área para interatividade Ato 1 (palavra do dia, montagem do 30 etc) -->
-        <section id="ato1Interacao" class="ato1-interacao" aria-label="Interatividade do Ato 1"></section>
-
-        <!-- área para interatividade Ato 2 (pensamento oculto etc) -->
-        <section id="ato2Interacao" class="ato2-interacao" aria-label="Interatividade do Ato 2"></section>
-
-        <!-- toast / avisos -->
-        <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
-      </main>
-    </section>
-
-    <!-- ============================= -->
-    <!-- MODAL: MEMÓRIA -->
-    <!-- ============================= -->
-    <div id="memoriaModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="memoriaTitulo" hidden>
-      <div class="modal-backdrop" data-close="memoriaModal"></div>
-      <div class="modal-card">
-        <div class="modal-header">
-          <h2 id="memoriaTitulo">Memória</h2>
-          <button type="button" class="icon-btn" data-close="memoriaModal" aria-label="Fechar">Fechar</button>
-        </div>
-        <div id="memoriaConteudo" class="modal-body"></div>
-      </div>
-    </div>
-
-    <!-- ============================= -->
-    <!-- MODAL: SAUDADE -->
-    <!-- ============================= -->
-    <div id="saudadeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="saudadeTitulo" hidden>
-      <div class="modal-backdrop" data-close="saudadeModal"></div>
-      <div class="modal-card">
-        <div class="modal-header">
-          <h2 id="saudadeTitulo">Quando bater saudade</h2>
-          <button type="button" class="icon-btn" data-close="saudadeModal" aria-label="Fechar">Fechar</button>
-        </div>
-        <div id="saudadeConteudo" class="modal-body"></div>
-      </div>
-    </div>
-
-    <!-- ============================= -->
-    <!-- MODAL: ARQUIVO (POEMAS ANTIGOS) -->
-    <!-- ============================= -->
-    <div id="arquivoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="arquivoTitulo" hidden>
-      <div class="modal-backdrop" data-close="arquivoModal"></div>
-      <div class="modal-card modal-large">
-        <div class="modal-header">
-          <h2 id="arquivoTitulo">Arquivo</h2>
-          <button type="button" class="icon-btn" data-close="arquivoModal" aria-label="Fechar">Fechar</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="arquivo-top">
-            <label class="sr-only" for="arquivoBuscar">Buscar</label>
-            <input id="arquivoBuscar" type="text" placeholder="Buscar por palavra..." autocomplete="off" />
-            <label class="sr-only" for="arquivoDia">Ir para o dia</label>
-            <input id="arquivoDia" type="number" min="1" max="365" placeholder="Dia" />
-            <button id="btnIrDia" type="button">Abrir</button>
-          </div>
-
-          <div id="arquivoLista" class="arquivo-lista" aria-label="Lista de poemas"></div>
-        </div>
-      </div>
-    </div>
-
+  <div id="blocoTexto" class="fade">
+    <div class="poema" id="poema"></div>
+    <div class="meta" id="meta"></div>
   </div>
 
-  <!-- ============================= -->
-  <!-- DATA -->
-  <!-- ============================= -->
-  <script src="data/prefacio.js"></script>
-  <script src="data/memorias.js"></script>
-  <script src="data/capsula365.js"></script>
+  <div class="btnRow">
+    <button onclick="carregarHoje()">Recarregar</button>
+  </div>
 
-  <!-- ============================= -->
-  <!-- POEMAS POR ATO -->
-  <!-- ============================= -->
-  <script src="data/poemas.ato1.js"></script>
-  <script src="data/poemas.ato2.js"></script>
+</div>
 
-  <!-- preparados para o futuro -->
-  <!--
-  <script src="data/poemas.ato3.js"></script>
-  <script src="data/poemas.ato4.js"></script>
-  <script src="data/poemas.ato5.js"></script>
-  <script src="data/poemas.ato6.js"></script>
-  -->
+<script src="data/prefacio.js"></script>
+<script src="data/memorias.js"></script>
+<script src="data/capsula365.js"></script>
+<script src="data/segredos.js"></script>
+<script src="data/poemas.ato1.js"></script>
+<script src="data/poemas.ato2.js"></script>
+<script src="data/poemas.index.js"></script>
 
-  <!-- ============================= -->
-  <!-- AGREGADOR -->
-  <!-- ============================= -->
-  <script src="data/poemas.index.js"></script>
+<script src="js/core.js"></script>
+<script src="js/app.js"></script>
 
-  <!-- ============================= -->
-  <!-- SEGREDOS / EXTRAS -->
-  <!-- ============================= -->
-  <script src="data/segredos.js"></script>
-
-  <!-- ============================= -->
-  <!-- CORE DO SISTEMA -->
-  <!-- ============================= -->
-  <script src="js/core.js"></script>
-  <script src="js/app.js"></script>
 </body>
 </html>
+
+
+===== css/base.css =====
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Parisienne&display=swap');
+
+:root{
+--bg:#0d0d0f;
+--panel:rgba(20,20,22,0.86);
+--text:#f1e9dc;
+--gold:#d4af37;
+}
+
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:"Cormorant Garamond",serif;
+color:var(--text);
+background:#0d0d0f;
+}
+
+.hidden{display:none !important;}
+
+
+===== css/layout.css =====
+
+.container{
+width:min(900px,92vw);
+margin:40px auto;
+padding:28px;
+border-radius:18px;
+background:rgba(20,20,22,0.86);
+box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+.title{
+text-align:center;
+color:#d4af37;
+font-size:32px;
+}
+
+.subtitle{
+text-align:center;
+color:rgba(241,233,220,0.7);
+}
+
+.poema{
+white-space:pre-wrap;
+text-align:center;
+font-size:22px;
+line-height:1.8;
+}
+
+.meta{
+text-align:center;
+margin-top:12px;
+opacity:0.7;
+}
+
+button{
+padding:10px 16px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.1);
+background:rgba(0,0,0,0.25);
+color:white;
+cursor:pointer;
+}
+
+
+===== css/atos.css =====
+
+body[data-ato="1"]{ --accent:#d4af37; }
+body[data-ato="2"]{ --accent:#7fb2ff; }
+body[data-ato="3"]{ --accent:#c2465a; }
+body[data-ato="4"]{ --accent:#94c7ff; }
+body[data-ato="5"]{ --accent:#c89a7b; }
+body[data-ato="6"]{ --accent:#d4af37; }
+
+
+===== data/prefacio.js =====
+
+const PREFACIO = `Antes do primeiro dia, existe a intenção.
+Um poema por dia.
+Um jeito calmo de dizer: eu escolhi ficar.`;
+
+
+===== data/memorias.js =====
+
+const MEMORIAS = {
+30:`Memória do Dia 30.`,
+60:`Memória do Dia 60.`,
+90:`Memória do Dia 90.`
+};
+
+function getMemoriaDoDia(dia){
+return MEMORIAS[dia] || "";
+}
+
+
+===== data/poemas.ato1.js =====
+
+const POEMAS_ATO1=[
+`Te amei ontem.
+Te amo hoje.
+E escolho te amar para sempre.`,
+`Amar você não é impulso.
+É permanência.`
+];
+
+
+===== data/poemas.ato2.js =====
+
+const POEMAS_ATO2=[
+`Eu gosto quando você aparece.`,
+`Com você o silêncio não assusta.`
+];
+
+
+===== data/poemas.index.js =====
+
+const POEMAS=[...POEMAS_ATO1,...POEMAS_ATO2];
+
+function getPoemaDoDia(dia){
+if(dia===365) return POEMA_365;
+return POEMAS[dia-1]||"(Em branco por enquanto)";
+}
+
+
+===== data/segredos.js =====
+
+const SEGREDOS=[
+"Eu ainda estou aqui.",
+"Você chegou. Eu já respirei melhor.",
+"Eu escolho você."
+];
+
+
+===== data/capsula365.js =====
+
+const POEMA_365 = `Te amei ontem.
+Te amo hoje.
+E amanhã… continuo escolhendo você.`;
+
+const CARTA_CAPSULA_365 = `Carta – Cápsula do Tempo
+23/02/2025
+
+Se você está lendo isso,
+significa que eu consegui ficar.`;
+
+function getCartaCapsula365(){
+return CARTA_CAPSULA_365;
+}
+
+
+===== js/core.js =====
+
+function getAto(dia){
+if(dia<=30) return 1;
+if(dia<=90) return 2;
+if(dia<=150) return 3;
+if(dia<=240) return 4;
+if(dia<=330) return 5;
+return 6;
+}
+
+
+===== js/app.js =====
+
+const senhaCorreta="10022024";
+const dataInicio=new Date("2026-02-24");
+
+let DIA_ATUAL=1;
+
+function diffDias(){
+const hoje=new Date();
+return Math.floor((hoje-dataInicio)/(1000*60*60*24));
+}
+
+function carregarPoema(dia){
+const titulo=document.getElementById("tituloTopo");
+const poemaEl=document.getElementById("poema");
+const meta=document.getElementById("meta");
+
+titulo.innerText=`Dia ${dia} de 365`;
+meta.innerText="Um poema por dia.";
+poemaEl.textContent=getPoemaDoDia(dia);
+}
+
+function carregarHoje(){
+DIA_ATUAL=diffDias()+1;
+if(DIA_ATUAL<1){
+document.getElementById("poema").textContent=PREFACIO;
+return;
+}
+carregarPoema(DIA_ATUAL);
+}
+
+function verificarSenha(){
+const senha=document.getElementById("senha").value;
+if(senha===senhaCorreta){
+document.getElementById("login").classList.add("hidden");
+document.getElementById("conteudo").classList.remove("hidden");
+carregarHoje();
+}else{
+alert("Senha incorreta");
+}
+}
+
