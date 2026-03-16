@@ -119,8 +119,54 @@ Porque eu sei
 que se for preciso,
 
 a gente escolhe de novo.`,
-  120:`Em breve...`,
-  150:`Em breve...`,
+  120: `Eu lembro exatamente do nosso primeiro beijo.
+
+Naquele momento parecia simples,
+mas minha cabeça estava a mil.
+
+Eu pensava em tudo ao mesmo tempo:
+se você estava sentindo o mesmo,
+se aquilo mudaria tudo entre nós,
+se era cedo demais
+ou exatamente a hora certa.
+
+Quando aconteceu,
+foi como se o mundo tivesse ficado em silêncio
+por um instante.
+
+E eu percebi uma coisa muito clara:
+
+aquele momento
+ia ficar guardado para sempre.
+
+Não foi só um beijo.
+
+Foi o momento
+em que eu entendi
+que nossa história
+tinha realmente começado.`,
+  150: `A viagem para o casamento da minha prima
+é uma lembrança que sempre volta na minha cabeça.
+
+A estrada,
+as conversas,
+a sensação de que estávamos vivendo algo especial
+mesmo nos momentos mais simples.
+
+E claro,
+aquela foto nossa
+dando um selinho no casamento.
+
+Sempre que penso nela
+eu lembro
+do quanto aquele dia foi leve.
+
+Não era apenas uma viagem.
+
+Era a sensação
+de que estávamos construindo memórias
+que um dia olharíamos para trás
+e sorriríamos juntos.`,
   180:`Em breve...`,
   210:`Em breve...`,
   240:`Em breve...`,
