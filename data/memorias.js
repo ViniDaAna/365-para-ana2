@@ -1,9 +1,8 @@
-// data/memorias.js
-// Memórias desbloqueáveis
+const MEMORY_INTERVAL = 30;
+const FINAL_LETTER_DAY = 365;
 
-(function(){
-  window.MEMORIAS = {
-    30: `Naquele dia eu decidi.
+const MEMORIAS = {
+  30: `Naquele dia eu decidi.
 
 Eu preciso te contar uma coisa.
 
@@ -31,7 +30,7 @@ Pra te lembrar.
 
 Que eu escolhi você.
 E que eu vou continuar escolhendo.`,
-    60: `Eu lembro como se eu estivesse te contando agora.
+  60: `Eu lembro como se eu estivesse te contando agora.
 
 Era 19:00.
 A gente no shopping, indo pro cinema com aquela mistura de empolgação e nervoso que dá vontade de fingir que não existe.
@@ -51,7 +50,7 @@ daquele tipo que você tenta esconder e não consegue.
 
 Talvez o filme tenha sido qualquer coisa.
 Mas você… já tava ficando.`,
-    90: `Eu lembro daquela noite.
+  90: `Eu lembro daquela noite.
 
 A gente tinha discutido.
 Não foi grito.
@@ -120,17 +119,24 @@ Porque eu sei
 que se for preciso,
 
 a gente escolhe de novo.`,
-    120: `Em breve...`,
-    150: `Em breve...`,
-    180: `Em breve...`,
-    210: `Em breve...`,
-    240: `Em breve...`,
-    270: `Em breve...`,
-    300: `Em breve...`,
-    330: `Em breve...`,
-  };
+  120:`Em breve...`,
+  150:`Em breve...`,
+  180:`Em breve...`,
+  210:`Em breve...`,
+  240:`Em breve...`,
+  270:`Em breve...`,
+  300:`Em breve...`,
+  330:`Em breve...`,
+};
 
-  window.getMemoriaDoDia = function(dia){
-    return window.MEMORIAS?.[dia] || "";
-  };
-})();
+function isMemoryDay(dia){
+  return dia > 0 && dia % MEMORY_INTERVAL === 0 && dia !== FINAL_LETTER_DAY;
+}
+
+function isFinalLetterDay(dia){
+  return dia === FINAL_LETTER_DAY;
+}
+
+function getMemoriaDoDia(dia){
+  return MEMORIAS[dia] || "";
+}
