@@ -1,4 +1,5 @@
-const POEMAS_ATO_1 = [
+const POEMAS_ATO1 = [
+
 `Te amei ontem.
 
 Nos dias em que a gente ainda estava aprendendo a ser dois.
@@ -376,5 +377,8 @@ E vou escolher ficar.
 Porque amar você
 não é impulso.
 
-É decisão renovada.`
+É decisão renovada.`,
+
 ];
+
+export { POEMAS_ATO1 };
