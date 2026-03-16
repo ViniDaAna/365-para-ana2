@@ -8,7 +8,7 @@
     return;
   }
 
-  // ====== CONFIG (igual teu site antigo, mas modular) ======
+  // ====== CONFIG (modular, mas com tua alma antiga) ======
   const SENHA_CORRETA = "10022024";
 
   // Ato 1 — palavras (Dia 1..30)
@@ -18,7 +18,6 @@
     "em","abrigo,","futuro","em","promessa."
   ];
 
-  // Saudade (mesmo tom do antigo)
   const SAUDADE_TEXTO =
     "Se você sentiu saudade, é porque o que temos é real.\n" +
     "E eu escolho você — hoje e todos os dias.";
@@ -74,8 +73,8 @@
     const isLogin = which === "login";
     loginView.dataset.visible = isLogin ? "true" : "false";
     mainView.dataset.visible = isLogin ? "false" : "true";
-    loginView.hidden = !isLogin ? true : false;
-    mainView.hidden = isLogin ? true : false;
+    loginView.hidden = !isLogin;
+    mainView.hidden = isLogin;
   }
 
   function setSubfrase() {
@@ -89,9 +88,7 @@
   function marcarRetorno() {
     const hoje = new Date().toDateString();
     const last = localStorage.getItem(C.STORAGE.LAST_VISIT);
-    if (last === hoje) {
-      subfrase.textContent += " Você voltou. Eu gosto disso.";
-    }
+    if (last === hoje) subfrase.textContent += " Você voltou. Eu gosto disso.";
     localStorage.setItem(C.STORAGE.LAST_VISIT, hoje);
   }
 
@@ -109,17 +106,20 @@
     el.textContent = "";
     if (cursorEl) cursorEl.classList.add("on");
 
+    const s = String(text || "");
     let i = 0;
+
     function step() {
-      el.textContent = text.slice(0, i);
+      el.textContent = s.slice(0, i);
       i++;
-      if (i <= text.length) {
+      if (i <= s.length) {
         typingTimer = setTimeout(step, speed);
       } else {
         if (cursorEl) cursorEl.classList.remove("on");
         if (typeof onDone === "function") onDone();
       }
     }
+
     step();
   }
 
@@ -148,11 +148,12 @@
 
   // ====== ATO 1 — INTERAÇÃO ======
   function renderAto1(dia) {
+    if (!ato1Interacao) return;
     ato1Interacao.innerHTML = "";
 
     if (C.getAto(dia) !== 1) return;
 
-    // No modo teste, libera até o dia em tela (igual teu feeling do antigo)
+    // Modo teste libera até o dia em tela
     const forced = C.getForcedDay();
     if (forced !== null) {
       if (dia >= 1 && dia <= 30) C.setAto1Unlocked(Math.max(C.getAto1Unlocked(), dia));
@@ -166,20 +167,22 @@
 
     // Palavra do dia
     const box = document.createElement("div");
-    box.className = "ato1-box";
+    box.className = "ato1Chave";
     box.innerHTML = `
-      <div class="ato1-tag">ENTRELINHAS</div>
-      <div class="ato1-word">${escapeHtml(ATO1_PALAVRAS[dia - 1] || "")}</div>
+      <div class="ato1Label">ENTRELINHAS</div>
+      <div class="ato1PalavraWrap">
+        <span class="ato1Palavra">${escapeHtml(ATO1_PALAVRAS[dia - 1] || "")}</span>
+      </div>
     `;
     ato1Interacao.appendChild(box);
 
-    // Dia 30: montagem
+    // Dia 30: montagem (frase completa)
     if (dia === 30 && unlocked >= 30) {
       const montagem = document.createElement("div");
-      montagem.className = "ato1-montagem";
+      montagem.className = "ato1Montagem";
       ATO1_PALAVRAS.forEach((w, i) => {
         const s = document.createElement("span");
-        s.className = "ato1-piece";
+        s.className = "ato1Word";
         s.textContent = w;
         s.style.transitionDelay = `${60 + i * 28}ms`;
         montagem.appendChild(s);
@@ -191,18 +194,11 @@
     }
   }
 
-  // ====== ATO 2 — INTERAÇÃO ======
+  // ====== ATO 2 — LINHAS (CSS já desenha; aqui só liga/desliga) ======
   function renderAto2Linhas(dia) {
     if (!ato2Linhas) return;
-
     const isAto2 = C.getAto(dia) === 2;
-    ato2Linhas.innerHTML = "";
-    if (!isAto2) {
-      ato2Linhas.classList.remove("on");
-      return;
-    }
-    ato2Linhas.classList.add("on");
-    ato2Linhas.innerHTML = `<div class="line"></div><div class="line"></div>`;
+    ato2Linhas.classList.toggle("on", isAto2);
   }
 
   function pickUnderlineTarget(text) {
@@ -228,7 +224,11 @@
     }
 
     // fallback: maior palavra (>=5) não-stopword
-    const stop = new Set(["quando","porque","ainda","mesmo","sobre","entre","depois","antes","agora","assim","isso","aquilo","muito","pouco","tudo","nunca","sempre","também","apenas","pra","para","com","sem","que","uma","um","e","o","a","os","as","no","na","nos","nas","do","da","dos","das","eu","você","voce"]);
+    const stop = new Set([
+      "quando","porque","ainda","mesmo","sobre","entre","depois","antes","agora","assim","isso","aquilo",
+      "muito","pouco","tudo","nunca","sempre","também","apenas","pra","para","com","sem","que","uma","um",
+      "e","o","a","os","as","no","na","nos","nas","do","da","dos","das","eu","você","voce"
+    ]);
     const rx = /[A-Za-zÀ-ÿ]{5,}/g;
 
     let best = null;
@@ -283,6 +283,7 @@
   }
 
   function applyAto2Underline(dia, rawText) {
+    if (!ato2Interacao) return;
     ato2Interacao.innerHTML = "";
 
     if (C.getAto(dia) !== 2) return;
@@ -297,7 +298,7 @@
 
     const thought = ato2Thought(target.word, rawText);
 
-    // re-render no DOM do poema com underline clicável
+    // troca o conteúdo do poema para HTML com underline clicável
     poemaEl.innerHTML = `${before}<span class="ato2U" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
 
     const u = poemaEl.querySelector(".ato2U");
@@ -317,10 +318,10 @@
     el.hidden = false;
     document.body.classList.add("modal-open");
   }
+
   function closeModal(el) {
     if (!el) return;
     el.hidden = true;
-    // fecha body class se nenhum modal aberto
     const anyOpen = [...document.querySelectorAll(".modal")].some(m => !m.hidden);
     if (!anyOpen) document.body.classList.remove("modal-open");
   }
@@ -336,14 +337,13 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        // fecha o último modal aberto
         const open = [...document.querySelectorAll(".modal")].filter(m => !m.hidden);
         if (open.length) closeModal(open[open.length - 1]);
       }
     });
   }
 
-  // ====== ARQUIVO (poemas antigos) ======
+  // ====== ARQUIVO ======
   function tituloPrimeiraLinha(texto) {
     const linha = String(texto || "").split("\n")[0].trim();
     if (!linha) return "Sem título";
@@ -434,7 +434,6 @@
 
   function doLogout() {
     localStorage.removeItem(C.STORAGE.LOGIN_OK);
-    // limpa input
     senhaInput.value = "";
     setLoginMsg("");
     showView("login");
@@ -453,17 +452,14 @@
 
     const texto = getPoema(dia);
 
-    // sempre escreve com typewriter (como teu antigo)
-    poemaEl.innerHTML = ""; // importante: zera pra underline depois
-    ato1Interacao.innerHTML = "";
-    ato2Interacao.innerHTML = "";
+    poemaEl.textContent = "";
+    if (ato1Interacao) ato1Interacao.innerHTML = "";
+    if (ato2Interacao) ato2Interacao.innerHTML = "";
 
     typeText(poemaEl, texto, 12, () => {
-      // depois de escrever, aplica interações
       renderAto1(dia);
       renderAto2Linhas(dia);
 
-      // Ato 2: underline + thought
       if (C.getAto(dia) === 2) {
         applyAto2Underline(dia, texto);
       }
@@ -480,7 +476,6 @@
     DIA_ATUAL = dia;
     DIA_EM_TELA = dia;
 
-    // subfrase + retorno + “segredinho” por inatividade (igual teu antigo)
     setSubfrase();
     marcarRetorno();
     updateMemoriaButton();
@@ -488,7 +483,7 @@
     renderPoema(dia);
   }
 
-  // ====== SEGREDO POR INATIVIDADE (toast) ======
+  // ====== SEGREDO POR INATIVIDADE ======
   function iniciarSegredoInatividade() {
     const cooldownMs = 2 * 60 * 60 * 1000; // 2h
 
@@ -529,7 +524,6 @@
 
   // ====== SANITY: Dia 29/30 ======
   function sanityCheckAto1() {
-    // Se o teu Ato 1 vier curto (falta 29/30), isso pega na hora.
     if (Array.isArray(window.POEMAS_ATO_1) && window.POEMAS_ATO_1.length < 30) {
       console.warn("POEMAS_ATO_1 curto:", window.POEMAS_ATO_1.length, "=> Dia 29/30 podem virar placeholder.");
       showToast("Aviso: Ato 1 parece estar incompleto (Dia 29/30).");
@@ -556,12 +550,10 @@
   function boot() {
     wireModalClose();
 
-    // Login auto
     const ok = localStorage.getItem(C.STORAGE.LOGIN_OK) === "1";
     showView(ok ? "main" : "login");
     if (ok) bootMain();
 
-    // listeners
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
       doLogin(String(senhaInput.value || "").trim());
