@@ -1,9 +1,4 @@
-// data/poemas.ato2.js
-// Ato 2 — Conexão (Dias 31–90)
-// Index 0 => Dia 31
-
-(function(){
-  window.POEMAS_ATO_2 = [
+const POEMAS_ATO_2 = [
 `Hoje eu não pensei em grandes promessas.
 Pensei no detalhe.
 No jeito que você fica quando esquece do mundo.
@@ -617,5 +612,4 @@ A gente escolhe consertar.
 
 E isso
 muda tudo.`
-  ];
-})();
+];
