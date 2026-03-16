@@ -1,8 +1,7 @@
-// data/capsula365.js
-// Dia 365 — Poema + Carta (Cápsula)
+const CARTA_FINAL = `// CARTA FINAL — DIA 365 (não usado agora)
+`;
 
-(function(){
-  window.POEMA_365 = `Não foi sobre escrever.
+const POEMA_365 = `Não foi sobre escrever.
 
 Foi sobre ficar.
 
@@ -20,7 +19,7 @@ E se o tempo continuar passando como sempre passa…
 
 eu ainda vou estar aqui.`;
 
-  window.CARTA_CAPSULA_365 = `Carta – Cápsula do Tempo
+const CARTA_CAPSULA_365 = `Carta – Cápsula do Tempo
 23/02/2025
 
 Hoje eu tive uma ideia.
@@ -101,7 +100,6 @@ E amanhã…
 
 eu vou continuar escolhendo você.`;
 
-  window.getCartaCapsula365 = function(){
-    return window.CARTA_CAPSULA_365 || "";
-  };
-})();
+function getCartaCapsula365(){
+  return CARTA_CAPSULA_365;
+}
