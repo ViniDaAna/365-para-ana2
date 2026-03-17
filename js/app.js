@@ -955,8 +955,13 @@ function renderAto4Puzzle(dia){
       if(!currentAlreadyRevealed){
         btn.title = cfg.hintAntes || "toque para revelar";
         btn.onclick = () => {
-          revealAto4PuzzlePiece(idx);
-          renderAto4Puzzle(dia);
+          if(btn.classList.contains("is-revealing")) return;
+          btn.classList.add("is-revealing");
+          btn.disabled = true;
+          setTimeout(() => {
+            revealAto4PuzzlePiece(idx);
+            renderAto4Puzzle(dia);
+          }, 340);
         };
       } else {
         btn.classList.add("is-revealed");
@@ -999,6 +1004,122 @@ function renderAto4Puzzle(dia){
   }
 }
 
+
+function cleanupAto4Inline(){
+  const poemaEl = document.getElementById("poema");
+  if(!poemaEl) return;
+
+  if(window.__ato4TouchCloser){
+    document.removeEventListener("pointerdown", window.__ato4TouchCloser, true);
+    window.__ato4TouchCloser = null;
+  }
+
+  if(window.__ato4ScrollObserver){
+    window.__ato4ScrollObserver.disconnect();
+    window.__ato4ScrollObserver = null;
+  }
+}
+
+function pickAto4Keyword(text){
+  const t = String(text || "");
+  const candidates = [
+    "calma","escolha","ficando","perto","conectado","certo","raiz","raízes",
+    "futuro","vida","casa","presença","rotina","continuar","sólido","solido"
+  ];
+
+  function findWord(w){
+    const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`\\b${escaped}\\b`, "i");
+    const m = t.match(re);
+    if(m && typeof m.index === "number") return {word: t.slice(m.index, m.index + m[0].length), idx: m.index};
+    return null;
+  }
+
+  for(const w of candidates){
+    const found = findWord(w);
+    if(found) return found;
+  }
+  return pickUnderlineTarget(t);
+}
+
+function applyAto4TouchInline(rawText, extraText){
+  const poemaEl = document.getElementById("poema");
+  if(!poemaEl || !rawText || !extraText) return;
+
+  const target = pickAto4Keyword(rawText);
+  if(!target) return;
+
+  const before = escapeHtml(rawText.slice(0, target.idx));
+  const word = escapeHtml(target.word);
+  const after = escapeHtml(rawText.slice(target.idx + target.word.length));
+  const note = escapeHtml(extraText);
+
+  poemaEl.innerHTML =
+    `${before}<span class="ato4TouchWrap"><span class="ato4TouchWord">${word}</span><span class="ato4TouchReveal">${note}</span></span>${after}`;
+
+  const wrap = poemaEl.querySelector(".ato4TouchWrap");
+  if(!wrap) return;
+
+  const open = () => wrap.classList.add("is-open");
+  const close = () => wrap.classList.remove("is-open");
+  const toggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    wrap.classList.toggle("is-open");
+  };
+
+  wrap.addEventListener("mouseenter", open);
+  wrap.addEventListener("mouseleave", close);
+  wrap.addEventListener("touchstart", toggle, {passive:false});
+  wrap.addEventListener("click", toggle);
+
+  window.__ato4TouchCloser = (e) => {
+    if(!wrap.contains(e.target)) close();
+  };
+  document.addEventListener("pointerdown", window.__ato4TouchCloser, true);
+}
+
+function applyAto4ScrollInline(rawText, extraText){
+  const poemaEl = document.getElementById("poema");
+  if(!poemaEl || !rawText || !extraText) return;
+
+  const safePoem = escapeHtml(rawText).replace(/\n/g, "<br>");
+  const safeExtra = escapeHtml(extraText).replace(/\n/g, "<br>");
+
+  poemaEl.innerHTML =
+    `${safePoem}<div class="ato4ScrollWrap"><div class="ato4ScrollReveal" id="ato4ScrollReveal">${safeExtra}</div></div>`;
+
+  const reveal = document.getElementById("ato4ScrollReveal");
+  if(!reveal) return;
+
+  window.__ato4ScrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if(entry.isIntersecting){
+        reveal.classList.add("show");
+      }
+    });
+  }, { threshold: 0.35 });
+
+  window.__ato4ScrollObserver.observe(reveal);
+}
+
+function applyAto4ExtraInteraction(dia, rawText){
+  cleanupAto4Inline();
+
+  if(getAto(dia) !== 4) return;
+  if(typeof getAto4Interacao !== "function") return;
+  if(typeof isAto4PuzzleDay === "function" && isAto4PuzzleDay(dia)) return;
+
+  const interacao = getAto4Interacao(dia);
+  if(!interacao) return;
+
+  if(interacao.type === "touch"){
+    applyAto4TouchInline(rawText, interacao.extraText || "");
+  } else if(interacao.type === "scroll"){
+    applyAto4ScrollInline(rawText, interacao.extraText || "");
+  }
+}
+
 function afterPoemTyped(dia, rawText){
   const forced = getForcedDay();
   const isTest = (forced !== null);
@@ -1019,6 +1140,7 @@ function afterPoemTyped(dia, rawText){
   renderAto2UI(dia);
   applyAto2Underline(dia, rawText);
   applyAto3Underline(dia, rawText);
+  applyAto4ExtraInteraction(dia, rawText);
   renderAto4Puzzle(dia);
 }
 
