@@ -167,9 +167,96 @@ Era a sensação
 de que estávamos construindo memórias
 que um dia olharíamos para trás
 e sorriríamos juntos.`,
-  180:`Em breve...`,
-  210:`Em breve...`,
-  240:`Em breve...`,
+  180: `Eu lembro daquele dia que a gente começou a falar
+sobre filhos.
+
+No começo parecia algo distante,
+quase como um assunto que a gente
+não precisava resolver agora.
+
+Mas, conforme a conversa foi acontecendo,
+eu percebi que não era só sobre isso.
+
+Era sobre o nosso futuro.
+Sobre o tipo de vida que a gente quer.
+Sobre como a gente pensa.
+
+E o mais marcante foi o jeito
+que a gente se entendeu.
+
+Sem pressão.
+Sem discussão.
+Sem tentar vencer.
+
+A gente só… se ouviu.
+
+E ali eu tive uma sensação muito clara:
+
+a gente não estava só vivendo
+um relacionamento.
+
+A gente estava aprendendo
+a construir uma vida juntos.`,,
+  210: `Eu sempre lembro das vezes
+que a gente fez bolo juntos.
+
+Pode parecer simples,
+mas nunca foi só isso.
+
+Era a bagunça,
+a gente rindo,
+errando,
+tentando acertar.
+
+Era você implicando comigo,
+eu implicando com você,
+e no fim a gente dando risada de tudo.
+
+E o mais engraçado é que
+o bolo nem precisava ficar perfeito.
+
+Porque o que importava
+já estava acontecendo ali.
+
+A gente junto.
+
+Hoje eu vejo que esses momentos simples
+foram alguns dos mais importantes.
+
+Porque são eles que mostram
+como a gente funciona de verdade.`,,
+  240: `Os domingos na sua casa
+viraram algo muito maior
+do que eu esperava.
+
+No começo era só um costume:
+eu ir pra lá
+e a gente passar a tarde juntos.
+
+Mas, com o tempo,
+isso foi ganhando outro significado.
+
+Virou rotina.
+Virou presença.
+Virou parte da minha vida.
+
+Era estranho perceber
+como aquilo fazia falta
+quando eu não estava lá.
+
+E foi aí que eu entendi:
+
+não era mais só sobre
+ir na sua casa.
+
+Era sobre você ter se tornado
+um lugar onde eu me sinto bem.
+
+Um lugar onde eu quero estar.
+
+Um lugar que,
+de alguma forma,
+também virou casa pra mim.`,,
   270:`Em breve...`,
   300:`Em breve...`,
   330:`Em breve...`,
