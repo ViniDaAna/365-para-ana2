@@ -412,3 +412,97 @@ body[data-ato="3"] .ato2Thought{
     font-size: 13px;
   }
 }
+
+/* ATO 4 — INTERAÇÕES EXTRAS */
+.ato4TouchWrap{
+  position: relative;
+  display: inline;
+}
+
+.ato4TouchWord{
+  color: rgba(171,214,209,0.98);
+  border-bottom: 1px solid rgba(171,214,209,0.42);
+  padding-bottom: 1px;
+  cursor: pointer;
+  transition: color 0.22s ease, border-color 0.22s ease, text-shadow 0.22s ease;
+}
+
+.ato4TouchWord:hover{
+  color: rgba(213,238,235,1);
+  border-color: rgba(213,238,235,0.68);
+  text-shadow: 0 0 10px rgba(171,214,209,0.14);
+}
+
+.ato4TouchReveal{
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: normal;
+  vertical-align: baseline;
+  transform: translateY(1px);
+  color: rgba(216,236,234,0.94);
+  transition: max-width 0.34s ease, opacity 0.28s ease, margin-left 0.28s ease;
+}
+
+.ato4TouchWrap.is-open .ato4TouchReveal{
+  max-width: 32em;
+  opacity: 1;
+  margin-left: 8px;
+}
+
+.ato4ScrollWrap{
+  margin-top: 12px;
+}
+
+.ato4ScrollReveal{
+  opacity: 0;
+  transform: translateY(8px);
+  color: rgba(214,233,230,0.92);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.ato4ScrollReveal.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* refinamento da revelação do puzzle */
+.ato4Piece{
+  perspective: 800px;
+}
+
+.ato4PieceInner{
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+
+.ato4Piece.is-revealing{
+  transform: scale(0.985);
+}
+
+.ato4Piece.is-revealing .ato4PieceInner{
+  opacity: 0;
+  transform: rotateY(90deg) scale(0.94);
+}
+
+.ato4Piece.is-revealing::before{
+  opacity: 1;
+}
+
+.ato4Piece.is-current:not(.is-revealed):not(.is-revealing)::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 10%, rgba(255,255,255,0.09) 46%, transparent 72%);
+  transform: translateX(-120%);
+  animation: ato4Shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ato4Shimmer{
+  0%{ transform: translateX(-120%); opacity: 0; }
+  20%{ opacity: 1; }
+  60%{ transform: translateX(120%); opacity: 0.9; }
+  100%{ transform: translateX(120%); opacity: 0; }
+}
