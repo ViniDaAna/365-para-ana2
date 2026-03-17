@@ -23,11 +23,11 @@ body[data-ato="3"]{
 }
 
 body[data-ato="4"]{
-  --auraRGB: 85,155,235;
+  --auraRGB: 143,191,186;
   --auraMin: 0.05;
   --auraMax: 0.20;
   --line: rgba(150,200,255,0.26);
-  --accent: #94c7ff;
+  --accent: #8fbfba;
 }
 
 body[data-ato="5"]{
