@@ -563,6 +563,7 @@ function renderAto1Palavra(diaEmTela){
   }
 
   const w = ATO1_PALAVRAS[diaEmTela - 1] || "";
+  palavra.classList.remove("is-reveal");
   palavra.textContent = w;
 
   montagem.classList.add("hidden");
@@ -571,6 +572,9 @@ function renderAto1Palavra(diaEmTela){
 
   chave.classList.remove("hidden");
   chave.setAttribute("aria-hidden","false");
+
+  void palavra.offsetWidth;
+  palavra.classList.add("is-reveal");
 }
 
 function montarAto1FraseNoCentro(){
@@ -587,7 +591,7 @@ function montarAto1FraseNoCentro(){
     const s = document.createElement("span");
     s.className = "ato1Word";
     s.textContent = w;
-    s.style.transitionDelay = `${60 + i * 28}ms`;
+    s.style.transitionDelay = `${90 + i * 34}ms`;
     montagem.appendChild(s);
   });
 
@@ -600,7 +604,7 @@ function montarAto1FraseNoCentro(){
   clearTimeout(window.__ato1AssembleTimer);
   window.__ato1AssembleTimer = setTimeout(() => {
     montagem.classList.add("assemble");
-  }, 1100);
+  }, 1380);
 }
 
 function esconderAto2UI(silencioso=false){
@@ -741,7 +745,7 @@ function openAto2Thought(text){
   box.classList.add("show");
 
   clearTimeout(window.__ato2ThoughtTimer);
-  window.__ato2ThoughtTimer = setTimeout(() => closeAto2Thought(), 5200);
+  window.__ato2ThoughtTimer = setTimeout(() => closeAto2Thought(), 6200);
 
   cleanupAto2Closer();
 
@@ -775,7 +779,7 @@ function closeAto2Thought(){
     box.setAttribute("aria-hidden","true");
     box.textContent = "";
     cleanupAto2Closer();
-  }, 180);
+  }, 220);
 }
 
 function buildAto3ThoughtFromKeyword(keywordRaw, day){
@@ -928,6 +932,7 @@ function renderAto4Puzzle(dia){
 
   box.classList.remove("hidden");
   box.setAttribute("aria-hidden","false");
+  box.querySelector('.ato4PuzzleTitle').textContent = cfg.titulo || "Uma parte de nós.";
   grid.innerHTML = "";
   grid.style.setProperty("--ato4-grid-size", String(cfg.gridSize || 4));
 
@@ -998,9 +1003,9 @@ function renderAto4Puzzle(dia){
   if(completo){
     hint.textContent = cfg.fraseFinal || "Peça por peça, fomos construindo algo que hoje eu chamo de nós.";
   } else if(currentAlreadyRevealed){
-    hint.textContent = `${cfg.hintDepois || "mais uma peça da nossa história."} (${abertas}/${total})`;
+    hint.textContent = `${cfg.hintDepois || "mais uma peça da nossa história."} · ${abertas}/${total}`;
   } else {
-    hint.textContent = `${cfg.hintAntes || "toque para revelar"} (${abertas}/${total})`;
+    hint.textContent = `${cfg.hintAntes || "toque para revelar"} · ${abertas}/${total}`;
   }
 }
 
@@ -1065,16 +1070,36 @@ function applyAto4TouchInline(rawText, extraText){
     e.preventDefault();
     e.stopPropagation();
     wrap.classList.toggle("is-open");
+    wrap.setAttribute("aria-expanded", wrap.classList.contains("is-open") ? "true" : "false");
   });
+
+  wrap.setAttribute("role", "button");
+  wrap.setAttribute("tabindex", "0");
+  wrap.setAttribute("aria-expanded", "false");
 
   wrap.addEventListener("touchstart", (e) => {
     e.preventDefault();
     e.stopPropagation();
     wrap.classList.toggle("is-open");
+    wrap.setAttribute("aria-expanded", wrap.classList.contains("is-open") ? "true" : "false");
   }, { passive: false });
 
+  wrap.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      wrap.classList.toggle("is-open");
+      wrap.setAttribute("aria-expanded", wrap.classList.contains("is-open") ? "true" : "false");
+    } else if(e.key === "Escape"){
+      close();
+      wrap.setAttribute("aria-expanded", "false");
+    }
+  });
+
   window.__ato4TouchCloser = (e) => {
-    if(!wrap.contains(e.target)) close();
+    if(!wrap.contains(e.target)){
+      close();
+      wrap.setAttribute("aria-expanded", "false");
+    }
   };
   document.addEventListener("pointerdown", window.__ato4TouchCloser, true);
 }
