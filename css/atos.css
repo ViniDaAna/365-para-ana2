@@ -433,22 +433,37 @@ body[data-ato="3"] .ato2Thought{
   text-shadow: 0 0 10px rgba(171,214,209,0.14);
 }
 
+.ato4TouchWrap{
+  position: relative;
+  display: inline;
+}
+
 .ato4TouchReveal{
-  display: inline-block;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  white-space: normal;
-  vertical-align: baseline;
-  transform: translateY(1px);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin-top: 8px;
+  min-width: 220px;
+  max-width: min(320px, 70vw);
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(143,191,186,0.20);
+  background: rgba(8,12,14,0.96);
   color: rgba(216,236,234,0.94);
-  transition: max-width 0.34s ease, opacity 0.28s ease, margin-left 0.28s ease;
+  line-height: 1.45;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  z-index: 30;
 }
 
 .ato4TouchWrap.is-open .ato4TouchReveal{
-  max-width: 32em;
   opacity: 1;
-  margin-left: 8px;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .ato4ScrollWrap{
