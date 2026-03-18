@@ -2,13 +2,13 @@
   position:relative;
   z-index:1;
   width:min(900px, 92vw);
-  margin: 36px auto 60px auto;
-  padding: 28px 28px 34px 28px;
-  border-radius: var(--radius);
-  background: var(--panel);
+  margin: 40px auto 64px auto;
+  padding: 30px 30px 36px 30px;
+  border-radius: calc(var(--radius) + 2px);
+  background: linear-gradient(180deg, rgba(22,22,24,0.90), rgba(17,17,19,0.84));
   box-shadow: var(--shadow);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.065);
+  backdrop-filter: blur(12px);
 }
 
 .corner-date{
@@ -16,44 +16,45 @@
   top: 14px;
   right: 18px;
   font-size: 14px;
-  letter-spacing: 0.35px;
-  color: rgba(241,233,220,0.35);
+  letter-spacing: 0.38px;
+  color: rgba(241,233,220,0.34);
   user-select:none;
 }
 
 .title{
-  margin: 10px 0 8px 0;
+  margin: 12px 0 10px 0;
   text-align:center;
   font-weight:500;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.68px;
   color: var(--accent);
-  font-size: 34px;
+  font-size: 35px;
+  text-wrap: balance;
 }
 
 .titleSmall{
   font-size: 18px;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.42px;
   color: rgba(241,233,220,0.92);
 }
 
 .thin-line{
-  width: 76px;
+  width: 78px;
   height: 1px;
   background: linear-gradient(to right, transparent, var(--line), transparent);
-  margin: 12px auto 16px auto;
+  margin: 13px auto 18px auto;
 }
 
 .subtitle{
   text-align:center;
-  margin: 8px 0 16px 0;
+  margin: 10px 0 18px 0;
   color: var(--muted);
   font-size: 16px;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.26px;
 }
 
 .meta{
   text-align:center;
-  color: rgba(241,233,220,0.38);
+  color: rgba(241,233,220,0.34);
   font-size: 14px;
   letter-spacing: 0.3px;
   margin-top: 16px;
@@ -68,7 +69,7 @@
 input[type="password"]{
   width: min(340px, 84%);
   display:block;
-  margin: 16px auto 10px auto;
+  margin: 18px auto 10px auto;
   padding: 12px 14px;
   border-radius: 14px;
   background: rgba(0,0,0,0.25);
@@ -77,10 +78,17 @@ input[type="password"]{
   color: rgba(241,233,220,0.95);
   letter-spacing:0.35px;
   font-size: 15px;
+  transition: border-color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
 }
 
 input[type="password"]::placeholder{
   color: rgba(241,233,220,0.35);
+}
+
+input[type="password"]:focus{
+  border-color: rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.02);
 }
 
 button{
@@ -91,25 +99,39 @@ button{
   padding: 10px 14px;
   border-radius: 14px;
   cursor:pointer;
-  transition: 0.2s ease;
+  transition:
+    border-color 0.28s ease,
+    background 0.32s ease,
+    box-shadow 0.32s ease,
+    transform 0.28s ease,
+    color 0.28s ease;
   letter-spacing:0.35px;
   font-size: 16px;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
 }
 
 button:hover{
-  transform: translateY(-1px);
-  border-color: rgba(255,255,255,0.18);
-  background: rgba(0,0,0,0.28);
+  transform: translateY(-0.5px);
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.26);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
 button:active{
   transform: translateY(0);
 }
 
+button:focus-visible{
+  outline: none;
+  border-color: rgba(255,255,255,0.20);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+}
+
 button:disabled{
   opacity:0.5;
   cursor:not-allowed;
   transform:none;
+  box-shadow:none;
 }
 
 .ghostBtn{
@@ -127,19 +149,21 @@ button:disabled{
 }
 
 #blocoTexto{
-  margin: 18px auto 12px auto;
-  padding: 26px 22px 24px 22px;
-  width: min(720px, 100%);
-  border-radius: 22px;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  margin: 22px auto 14px auto;
+  padding: 32px 30px 28px 30px;
+  width: min(690px, 100%);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.17), rgba(0,0,0,0.145));
+  border: 1px solid rgba(255,255,255,0.055);
+  box-shadow:
+    0 18px 46px rgba(0,0,0,0.34),
+    inset 0 1px 0 rgba(255,255,255,0.025);
 }
 
 .fade{
   opacity:0;
-  transform: translateY(8px);
-  transition: 0.35s ease;
+  transform: translateY(6px);
+  transition: opacity 0.52s ease, transform 0.52s ease;
 }
 .fade.show{
   opacity:1;
@@ -149,11 +173,18 @@ button:disabled{
 .poema{
   white-space: pre-wrap;
   text-align:center;
-  line-height: 1.85;
+  line-height: 1.92;
   font-size: 22px;
-  letter-spacing: 0.25px;
-  color: rgba(241,233,220,0.92);
-  padding: 10px 8px 2px 8px;
+  letter-spacing: 0.18px;
+  color: rgba(241,233,220,0.93);
+  padding: 14px 12px 4px 12px;
+  max-width: 28ch;
+  margin: 0 auto;
+  text-wrap: pretty;
+}
+
+#meta{
+  margin-top: 18px;
 }
 
 .btnRow{
@@ -161,63 +192,65 @@ button:disabled{
   gap: 12px;
   justify-content:center;
   flex-wrap:wrap;
-  margin-top: 16px;
+  margin-top: 18px;
 }
 
 .saudade{
-  margin: 14px auto 0 auto;
-  width: min(640px, 100%);
-  padding: 14px 16px;
+  margin: 16px auto 0 auto;
+  width: min(620px, 100%);
+  padding: 15px 18px;
   border-radius: 18px;
-  background: rgba(0,0,0,0.18);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(0,0,0,0.16);
+  border: 1px solid rgba(255,255,255,0.06);
   color: rgba(241,233,220,0.86);
   text-align:center;
-  line-height:1.6;
-  letter-spacing:0.25px;
+  line-height:1.68;
+  letter-spacing:0.22px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
 .assinatura{
   text-align:center;
-  margin-top: 18px;
-  color: rgba(241,233,220,0.25);
-  letter-spacing: 0.35px;
+  margin-top: 20px;
+  color: rgba(241,233,220,0.24);
+  letter-spacing: 0.4px;
   font-size: 13px;
 }
 
 .extra{
-  width: min(58ch, 100%);
-  margin: 0 auto 18px auto;
-  padding: 16px 16px 14px 16px;
-  border-radius: 18px;
-  background: rgba(0,0,0,0.14);
-  border: 1px solid rgba(255,255,255,0.07);
+  width: min(56ch, 100%);
+  margin: 0 auto 22px auto;
+  padding: 18px 18px 16px 18px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.13);
+  border: 1px solid rgba(255,255,255,0.065);
   text-align:center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
 }
 .extraTag{
   display:inline-block;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(212,175,55,0.22);
-  color: rgba(212,175,55,0.86);
-  background: rgba(212,175,55,0.06);
-  letter-spacing: 0.4px;
+  border: 1px solid rgba(212,175,55,0.20);
+  color: rgba(212,175,55,0.84);
+  background: rgba(212,175,55,0.055);
+  letter-spacing: 0.42px;
   font-size: 13px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .extraTexto{
   white-space: pre-wrap;
-  line-height: 1.6;
+  line-height: 1.68;
   color: rgba(241,233,220,0.84);
   font-size: 17px;
-  letter-spacing: 0.25px;
+  letter-spacing: 0.18px;
 }
 .btnIntro{
-  margin-top: 12px;
-  padding: 9px 14px;
+  margin-top: 14px;
+  padding: 9px 15px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.20);
   color: rgba(241,233,220,0.92);
 }
 
@@ -234,11 +267,11 @@ button:disabled{
   box-shadow: 0 12px 40px rgba(0,0,0,0.6);
   z-index: 50;
   opacity: 0;
-  transition: 0.25s ease;
+  transition: opacity 0.32s ease, transform 0.32s ease;
   width: min(560px, 92vw);
   text-align:center;
-  letter-spacing:0.25px;
-  line-height:1.45;
+  letter-spacing:0.22px;
+  line-height:1.5;
 }
 .toast.show{
   opacity:1;
@@ -246,18 +279,18 @@ button:disabled{
 }
 
 #conteudo.pageflip-in{
-  animation: pageflipIn 0.52s ease both;
+  animation: pageflipIn 0.56s ease both;
 }
 #conteudo.pageflip-out{
-  animation: pageflipOut 0.52s ease both;
+  animation: pageflipOut 0.56s ease both;
 }
 @keyframes pageflipIn{
-  0%{ opacity:0; transform: translateY(10px) scale(0.995); }
+  0%{ opacity:0; transform: translateY(8px) scale(0.997); }
   100%{ opacity:1; transform: translateY(0) scale(1); }
 }
 @keyframes pageflipOut{
   0%{ opacity:1; transform: translateY(0) scale(1); }
-  100%{ opacity:0; transform: translateY(6px) scale(0.997); }
+  100%{ opacity:0; transform: translateY(5px) scale(0.998); }
 }
 
 body.modo-arquivo #blocoTexto{
@@ -323,7 +356,7 @@ body.modo-arquivo #blocoTexto{
 
 .arquivoItem:hover{
   border-color: rgba(255,255,255,0.14);
-  background: rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.20);
 }
 
 .arquivoDia{
@@ -522,19 +555,25 @@ body.modo-arquivo #blocoTexto{
 @media (max-width: 720px){
   .container{
     margin: 22px auto 44px auto;
-    padding: 22px 16px 26px 16px;
+    padding: 24px 16px 28px 16px;
     border-radius: 18px;
   }
   #blocoTexto{
-    padding: 20px 14px 18px 14px;
-    border-radius: 20px;
+    width: min(100%, 100%);
+    padding: 24px 16px 22px 16px;
+    border-radius: 21px;
   }
   .title{
-    font-size: 28px;
+    font-size: 29px;
   }
   .poema{
+    max-width: 100%;
     font-size: 20px;
-    line-height: 1.78;
+    line-height: 1.84;
+    padding-inline: 6px;
+  }
+  .btnRow{
+    gap: 10px;
   }
   .arquivoDia{
     min-width: 70px;
