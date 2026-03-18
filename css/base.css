@@ -36,20 +36,28 @@ html, body{
   height:100%;
 }
 
+html{
+  scroll-behavior: smooth;
+}
+
 body{
   margin:0;
   font-family: "Cormorant Garamond", serif;
   color: var(--text);
-  background: radial-gradient(1200px 800px at 50% 12%, rgba(255,255,255,0.045), transparent 70%),
-              radial-gradient(900px 700px at 20% 78%, rgba(212,175,55,0.03), transparent 60%),
-              linear-gradient(180deg, var(--bg), #0a0a0c 60%, #060608);
+  background:
+    radial-gradient(1200px 800px at 50% 12%, rgba(255,255,255,0.045), transparent 70%),
+    radial-gradient(900px 700px at 20% 78%, rgba(212,175,55,0.03), transparent 60%),
+    linear-gradient(180deg, var(--bg), #0a0a0c 60%, #060608);
   overflow-x:hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body::before{
   content:"";
   position:fixed;
-  inset:-200px;
+  inset:-220px;
   pointer-events:none;
   background:
     radial-gradient(620px 420px at 50% 18%,
@@ -58,9 +66,11 @@ body::before{
     radial-gradient(520px 420px at 20% 78%,
       rgba(var(--auraRGB), calc(var(--auraOpacity) * 0.55)),
       transparent 70%);
-  filter: blur(18px);
+  filter: blur(20px);
   opacity:1;
   z-index:0;
+  transform: translateZ(0);
+  animation: auraBreath 17s ease-in-out infinite;
 }
 
 body::after{
@@ -69,9 +79,14 @@ body::after{
   inset:0;
   pointer-events:none;
   background:
-    linear-gradient(90deg, rgba(255,255,255,0.03), transparent 12%, transparent 88%, rgba(255,255,255,0.03)),
-    radial-gradient(1000px 720px at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 74%);
+    linear-gradient(90deg, rgba(255,255,255,0.025), transparent 14%, transparent 86%, rgba(255,255,255,0.025)),
+    radial-gradient(1100px 760px at 50% 50%, transparent 32%, rgba(0,0,0,0.52) 74%);
   z-index:0;
+}
+
+@keyframes auraBreath{
+  0%, 100%{ transform: scale(1) translate3d(0,0,0); opacity: 0.96; }
+  50%{ transform: scale(1.028) translate3d(0,-8px,0); opacity: 1; }
 }
 
 .hidden{ display:none !important; }
@@ -82,3 +97,20 @@ body::after{
 }
 
 a{ color: inherit; }
+
+button,
+input,
+textarea,
+select{
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+  *, *::before, *::after{
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
