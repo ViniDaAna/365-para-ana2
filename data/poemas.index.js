@@ -12,7 +12,11 @@ for(let i = 0; i < POEMAS_ATO_3.length; i++){
   POEMAS[90 + i] = POEMAS_ATO_3[i];
 }
 
-for(let i = 150; i < 364; i++){
+for(let i = 0; i < POEMAS_ATO_4.length; i++){
+  POEMAS[150 + i] = POEMAS_ATO_4[i];
+}
+
+for(let i = 240; i < 364; i++){
   if(!POEMAS[i]){
     POEMAS[i] =
 `Dia ${i + 1}
