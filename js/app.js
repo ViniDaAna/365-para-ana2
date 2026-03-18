@@ -1004,7 +1004,6 @@ function renderAto4Puzzle(dia){
   }
 }
 
-
 function cleanupAto4Inline(){
   const poemaEl = document.getElementById("poema");
   if(!poemaEl) return;
@@ -1060,18 +1059,19 @@ function applyAto4TouchInline(rawText, extraText){
   const wrap = poemaEl.querySelector(".ato4TouchWrap");
   if(!wrap) return;
 
-  const open = () => wrap.classList.add("is-open");
   const close = () => wrap.classList.remove("is-open");
-  const toggle = (e) => {
+
+  wrap.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     wrap.classList.toggle("is-open");
-  };
+  });
 
-  wrap.addEventListener("mouseenter", open);
-  wrap.addEventListener("mouseleave", close);
-  wrap.addEventListener("touchstart", toggle, {passive:false});
-  wrap.addEventListener("click", toggle);
+  wrap.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    wrap.classList.toggle("is-open");
+  }, { passive: false });
 
   window.__ato4TouchCloser = (e) => {
     if(!wrap.contains(e.target)) close();
