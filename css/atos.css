@@ -26,7 +26,7 @@ body[data-ato="4"]{
   --auraRGB: 143,191,186;
   --auraMin: 0.05;
   --auraMax: 0.20;
-  --line: rgba(150,200,255,0.26);
+  --line: rgba(143,191,186,0.26);
   --accent: #8fbfba;
 }
 
@@ -224,9 +224,9 @@ body[data-ato="3"] .ato2Thought{
   width: min(560px, 100%);
   padding: 16px 14px 14px;
   border-radius: 22px;
-  border: 1px solid rgba(148,199,255,0.16);
+  border: 1px solid rgba(143,191,186,0.16);
   background:
-    linear-gradient(180deg, rgba(148,199,255,0.06), rgba(0,0,0,0.14)),
+    linear-gradient(180deg, rgba(143,191,186,0.06), rgba(0,0,0,0.14)),
     rgba(0,0,0,0.10);
   box-shadow:
     0 12px 36px rgba(0,0,0,0.20),
@@ -242,7 +242,7 @@ body[data-ato="3"] .ato2Thought{
   text-align: center;
   font-size: 13px;
   letter-spacing: 0.42px;
-  color: rgba(203,228,255,0.92);
+  color: rgba(217,236,232,0.92);
   margin-bottom: 12px;
 }
 
@@ -273,6 +273,7 @@ body[data-ato="3"] .ato2Thought{
     box-shadow 0.22s ease,
     opacity 0.22s ease;
   -webkit-tap-highlight-color: transparent;
+  perspective: 800px;
 }
 
 .ato4Piece::before{
@@ -281,7 +282,7 @@ body[data-ato="3"] .ato2Thought{
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.12)),
-    radial-gradient(circle at 50% 40%, rgba(148,199,255,0.16), transparent 70%);
+    radial-gradient(circle at 50% 40%, rgba(143,191,186,0.16), transparent 70%);
   opacity: 0;
   transition: opacity 0.22s ease;
   pointer-events: none;
@@ -304,14 +305,16 @@ body[data-ato="3"] .ato2Thought{
     opacity 0.36s ease,
     transform 0.36s ease,
     background 0.36s ease;
+  transform-origin: center;
+  backface-visibility: hidden;
 }
 
 .ato4Piece.is-current{
   cursor: pointer;
   box-shadow:
-    inset 0 0 0 1px rgba(148,199,255,0.22),
+    inset 0 0 0 1px rgba(143,191,186,0.22),
     0 10px 24px rgba(0,0,0,0.24),
-    0 0 0 1px rgba(148,199,255,0.08);
+    0 0 0 1px rgba(143,191,186,0.08);
 }
 
 .ato4Piece.is-current::before{
@@ -321,13 +324,23 @@ body[data-ato="3"] .ato2Thought{
 .ato4Piece.is-current:hover{
   transform: translateY(-1px) scale(1.01);
   box-shadow:
-    inset 0 0 0 1px rgba(148,199,255,0.28),
+    inset 0 0 0 1px rgba(143,191,186,0.28),
     0 12px 28px rgba(0,0,0,0.28),
-    0 0 18px rgba(148,199,255,0.08);
+    0 0 18px rgba(143,191,186,0.08);
 }
 
 .ato4Piece.is-current:active{
   transform: scale(0.985);
+}
+
+.ato4Piece.is-current:not(.is-revealed):not(.is-revealing)::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 10%, rgba(255,255,255,0.09) 46%, transparent 72%);
+  transform: translateX(-120%);
+  animation: ato4Shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .ato4Piece.is-locked{
@@ -364,6 +377,26 @@ body[data-ato="3"] .ato2Thought{
   pointer-events: none;
 }
 
+.ato4Piece.is-revealing{
+  transform: scale(0.985);
+}
+
+.ato4Piece.is-revealing .ato4PieceInner{
+  opacity: 0;
+  transform: rotateY(90deg) scale(0.94);
+}
+
+.ato4Piece.is-revealing::before{
+  opacity: 1;
+}
+
+@keyframes ato4Shimmer{
+  0%{ transform: translateX(-120%); opacity: 0; }
+  20%{ opacity: 1; }
+  60%{ transform: translateX(120%); opacity: 0.9; }
+  100%{ transform: translateX(120%); opacity: 0; }
+}
+
 .ato4Hint{
   margin: 12px auto 0;
   width: min(420px, 100%);
@@ -375,42 +408,15 @@ body[data-ato="3"] .ato2Thought{
 }
 
 .ato4Puzzle.is-complete{
-  border-color: rgba(148,199,255,0.24);
+  border-color: rgba(143,191,186,0.24);
   box-shadow:
     0 16px 42px rgba(0,0,0,0.24),
-    0 0 28px rgba(148,199,255,0.06),
+    0 0 28px rgba(143,191,186,0.06),
     inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .ato4Puzzle.is-complete .ato4Hint{
   color: rgba(212,232,255,0.96);
-}
-
-@media (max-width: 640px){
-  .ato4Puzzle{
-    width: min(100%, 100%);
-    padding: 14px 10px 12px;
-    border-radius: 18px;
-  }
-
-  .ato4Grid{
-    gap: 5px;
-    width: min(100%, 100%);
-  }
-
-  .ato4Piece{
-    border-radius: 10px;
-  }
-
-  .ato4PieceInner{
-    font-size: 11px;
-    letter-spacing: 0.32px;
-  }
-
-  .ato4Hint{
-    width: min(100%, 100%);
-    font-size: 13px;
-  }
 }
 
 /* ATO 4 — INTERAÇÕES EXTRAS */
@@ -431,11 +437,6 @@ body[data-ato="3"] .ato2Thought{
   color: rgba(213,238,235,1);
   border-color: rgba(213,238,235,0.68);
   text-shadow: 0 0 10px rgba(171,214,209,0.14);
-}
-
-.ato4TouchWrap{
-  position: relative;
-  display: inline;
 }
 
 .ato4TouchReveal{
@@ -482,42 +483,40 @@ body[data-ato="3"] .ato2Thought{
   transform: translateY(0);
 }
 
-/* refinamento da revelação do puzzle */
-.ato4Piece{
-  perspective: 800px;
-}
+@media (max-width: 640px){
+  .ato4Puzzle{
+    width: min(100%, 100%);
+    padding: 14px 10px 12px;
+    border-radius: 18px;
+  }
 
-.ato4PieceInner{
-  transform-origin: center;
-  backface-visibility: hidden;
-}
+  .ato4Grid{
+    gap: 5px;
+    width: min(100%, 100%);
+  }
 
-.ato4Piece.is-revealing{
-  transform: scale(0.985);
-}
+  .ato4Piece{
+    border-radius: 10px;
+  }
 
-.ato4Piece.is-revealing .ato4PieceInner{
-  opacity: 0;
-  transform: rotateY(90deg) scale(0.94);
-}
+  .ato4PieceInner{
+    font-size: 11px;
+    letter-spacing: 0.32px;
+  }
 
-.ato4Piece.is-revealing::before{
-  opacity: 1;
-}
+  .ato4Hint{
+    width: min(100%, 100%);
+    font-size: 13px;
+  }
 
-.ato4Piece.is-current:not(.is-revealed):not(.is-revealing)::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 10%, rgba(255,255,255,0.09) 46%, transparent 72%);
-  transform: translateX(-120%);
-  animation: ato4Shimmer 2.8s ease-in-out infinite;
-  pointer-events: none;
-}
+  .ato4TouchReveal{
+    left: 50%;
+    transform: translate(-50%, 6px);
+    width: min(320px, 82vw);
+    min-width: 0;
+  }
 
-@keyframes ato4Shimmer{
-  0%{ transform: translateX(-120%); opacity: 0; }
-  20%{ opacity: 1; }
-  60%{ transform: translateX(120%); opacity: 0.9; }
-  100%{ transform: translateX(120%); opacity: 0; }
+  .ato4TouchWrap.is-open .ato4TouchReveal{
+    transform: translate(-50%, 0);
+  }
 }
