@@ -48,20 +48,31 @@ body[data-ato="6"]{
 
 /* ATO 1 — ENTRELINHAS */
 .ato1Chave{
-  margin: 18px auto 10px auto;
-  width: min(50ch, 100%);
-  padding: 12px 14px;
-  border-radius: 18px;
-  border: 1px solid rgba(212,175,55,0.18);
-  background: rgba(212,175,55,0.06);
+  margin: 22px auto 12px auto;
+  width: min(48ch, 100%);
+  padding: 14px 16px 13px;
+  border-radius: 20px;
+  border: 1px solid rgba(212,175,55,0.16);
+  background:
+    linear-gradient(180deg, rgba(212,175,55,0.045), rgba(212,175,55,0.025)),
+    rgba(0,0,0,0.08);
   text-align:center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.35s ease, background 0.35s ease;
+}
+
+.ato1Chave:not(.hidden){
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .ato1Label{
-  font-size: 12px;
-  letter-spacing: 0.45px;
-  color: rgba(212,175,55,0.92);
-  margin-bottom: 8px;
+  font-size: 11px;
+  letter-spacing: 0.62px;
+  color: rgba(212,175,55,0.82);
+  margin-bottom: 9px;
 }
 
 .ato1PalavraWrap{
@@ -73,23 +84,34 @@ body[data-ato="6"]{
 
 .ato1Palavra{
   font-size: 22px;
-  color: rgba(241,233,220,0.92);
-  letter-spacing: 0.3px;
-  border-bottom: 1px solid rgba(212,175,55,0.45);
-  padding-bottom: 2px;
+  color: rgba(241,233,220,0.94);
+  letter-spacing: 0.38px;
+  border-bottom: 1px solid rgba(212,175,55,0.38);
+  padding: 0 2px 3px 2px;
+  text-shadow: 0 0 0 rgba(212,175,55,0);
+}
+
+.ato1Palavra.is-reveal{
+  animation: ato1WordReveal 0.78s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes ato1WordReveal{
+  0%{ opacity: 0; transform: translateY(8px); letter-spacing: 0.7px; text-shadow: 0 0 0 rgba(212,175,55,0); }
+  60%{ opacity: 1; transform: translateY(0); text-shadow: 0 0 14px rgba(212,175,55,0.08); }
+  100%{ opacity: 1; transform: translateY(0); letter-spacing: 0.38px; text-shadow: 0 0 0 rgba(212,175,55,0); }
 }
 
 .ato1Montagem{
-  margin: 18px auto 2px auto;
-  width: min(62ch, 100%);
+  margin: 22px auto 2px auto;
+  width: min(60ch, 100%);
   text-align:center;
-  padding: 18px 16px;
-  border-radius: 22px;
-  background: rgba(0,0,0,0.16);
-  border: 1px solid rgba(255,255,255,0.07);
+  padding: 22px 18px 20px;
+  border-radius: 24px;
+  background: rgba(0,0,0,0.14);
+  border: 1px solid rgba(255,255,255,0.065);
   opacity: 0;
-  transform: translateY(6px);
-  transition: 0.35s ease;
+  transform: translateY(5px);
+  transition: opacity 0.52s ease, transform 0.52s ease, background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease;
 }
 
 .ato1Montagem.show{
@@ -101,10 +123,10 @@ body[data-ato="6"]{
   display:inline-block;
   margin: 4px 6px;
   opacity:0;
-  transform: translateY(8px);
-  transition: 0.45s ease;
+  transform: translateY(10px);
+  transition: opacity 0.52s ease, transform 0.52s ease, color 0.4s ease, text-shadow 0.4s ease;
   color: rgba(241,233,220,0.90);
-  letter-spacing:0.25px;
+  letter-spacing:0.24px;
   font-size: 18px;
 }
 
@@ -114,70 +136,83 @@ body[data-ato="6"]{
 }
 
 .ato1Montagem.assemble{
-  background: rgba(212,175,55,0.06);
-  border-color: rgba(212,175,55,0.18);
+  background: rgba(212,175,55,0.05);
+  border-color: rgba(212,175,55,0.16);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.02);
 }
 .ato1Montagem.assemble .ato1Word{
   color: rgba(212,175,55,0.92);
+  text-shadow: 0 0 12px rgba(212,175,55,0.10);
 }
 
 /* ATO 2 — LINHAS + SUBLINHADO */
 .ato2Lines{
   display:none;
-  margin: 18px auto 12px auto;
+  margin: 20px auto 14px auto;
   width: min(56ch, 100%);
   max-width: 560px;
   flex-direction: column;
   gap: var(--ato2Gap, 44px);
-  transition: gap 0.65s ease;
-  opacity: 0.98;
+  transition: gap 0.85s ease, opacity 0.45s ease, transform 0.45s ease;
+  opacity: 0;
+  transform: translateY(4px);
 }
 
 body[data-ato="2"] .ato2Lines{
   display:flex;
 }
 
+.ato2Lines:not(.hidden){
+  opacity: 0.94;
+  transform: translateY(0);
+}
+
 .ato2Line{
-  height: 2px;
+  height: 1px;
   border-radius: 999px;
   background: linear-gradient(
     to right,
     transparent,
-    rgba(255,255,255,0.18),
-    rgba(255,255,255,0.42),
-    rgba(255,255,255,0.18),
+    rgba(255,255,255,0.12),
+    rgba(255,255,255,0.34),
+    rgba(255,255,255,0.12),
     transparent
   );
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-  opacity: 0.95;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  opacity: 0.9;
 }
 
 .ato2U{
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 6px;
+  text-decoration: none;
   cursor: pointer;
   color: rgba(241,233,220,0.98);
+  border-bottom: 1px solid rgba(127,178,255,0.52);
+  padding-bottom: 1px;
+  transition: color 0.24s ease, border-color 0.24s ease, text-shadow 0.24s ease;
 }
 
 .ato2U:hover{
-  color: rgba(255,255,255,0.98);
+  color: rgba(255,255,255,0.99);
+  border-color: rgba(170,205,255,0.72);
+  text-shadow: 0 0 10px rgba(127,178,255,0.12);
 }
 
 .ato2Thought{
   display:none;
-  margin: 12px auto 6px auto;
-  width: min(56ch, 100%);
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.16);
+  margin: 14px auto 8px auto;
+  width: min(54ch, 100%);
+  padding: 13px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.085);
+  background: rgba(0,0,0,0.14);
   color: rgba(241,233,220,0.90);
-  letter-spacing: 0.35px;
+  letter-spacing: 0.24px;
   font-size: 15px;
+  line-height: 1.55;
   opacity: 0;
-  transform: translateY(6px);
-  transition: 0.25s ease;
+  transform: translateY(5px);
+  transition: opacity 0.28s ease, transform 0.28s ease, border-color 0.28s ease, background 0.28s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
 body[data-ato="2"] .ato2Thought,
@@ -197,39 +232,38 @@ body[data-ato="3"] .ato2Thought{
 /* ATO 3 — FOGO */
 .ato3U{
   cursor: pointer;
-  color: rgba(194,70,90,0.96);
+  color: rgba(194,70,90,0.97);
   text-decoration: none;
-  border-bottom: 1px solid rgba(194,70,90,0.45);
+  border-bottom: 1px solid rgba(194,70,90,0.42);
   padding-bottom: 1px;
-  transition: color 0.25s ease, border-color 0.25s ease, text-shadow 0.25s ease, transform 0.25s ease;
-  animation: ato3Pulse 2.6s ease-in-out infinite;
+  transition: color 0.24s ease, border-color 0.24s ease, text-shadow 0.24s ease, filter 0.24s ease;
+  animation: ato3Pulse 4.2s ease-in-out infinite;
 }
 
 .ato3U:hover{
-  color: rgba(224,108,128,1);
-  border-color: rgba(224,108,128,0.82);
-  text-shadow: 0 0 10px rgba(194,70,90,0.22);
+  color: rgba(224,108,128,0.98);
+  border-color: rgba(224,108,128,0.72);
+  text-shadow: 0 0 12px rgba(194,70,90,0.16);
 }
 
 @keyframes ato3Pulse{
-  0%{ opacity: 0.86; text-shadow: 0 0 0 rgba(194,70,90,0.0); }
-  50%{ opacity: 1; text-shadow: 0 0 10px rgba(194,70,90,0.12); }
-  100%{ opacity: 0.88; text-shadow: 0 0 0 rgba(194,70,90,0.0); }
+  0%, 100%{ opacity: 0.92; text-shadow: 0 0 0 rgba(194,70,90,0); filter: saturate(1); }
+  50%{ opacity: 1; text-shadow: 0 0 12px rgba(194,70,90,0.10); filter: saturate(1.05); }
 }
 
 /* ATO 4 — PUZZLE */
 .ato4Puzzle{
   --ato4-grid-size: 4;
-  margin: 22px auto 12px auto;
+  margin: 24px auto 12px auto;
   width: min(560px, 100%);
-  padding: 16px 14px 14px;
-  border-radius: 22px;
-  border: 1px solid rgba(143,191,186,0.16);
+  padding: 18px 16px 15px;
+  border-radius: 24px;
+  border: 1px solid rgba(143,191,186,0.14);
   background:
-    linear-gradient(180deg, rgba(143,191,186,0.06), rgba(0,0,0,0.14)),
-    rgba(0,0,0,0.10);
+    linear-gradient(180deg, rgba(143,191,186,0.05), rgba(0,0,0,0.12)),
+    rgba(0,0,0,0.09);
   box-shadow:
-    0 12px 36px rgba(0,0,0,0.20),
+    0 14px 38px rgba(0,0,0,0.20),
     inset 0 1px 0 rgba(255,255,255,0.03);
   opacity: 1;
 }
@@ -241,8 +275,8 @@ body[data-ato="3"] .ato2Thought{
 .ato4PuzzleTitle{
   text-align: center;
   font-size: 13px;
-  letter-spacing: 0.42px;
-  color: rgba(217,236,232,0.92);
+  letter-spacing: 0.48px;
+  color: rgba(217,236,232,0.90);
   margin-bottom: 12px;
 }
 
@@ -266,12 +300,13 @@ body[data-ato="3"] .ato2Thought{
   background-color: rgba(255,255,255,0.03);
   background-repeat: no-repeat;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.05),
-    0 8px 18px rgba(0,0,0,0.18);
+    inset 0 0 0 1px rgba(255,255,255,0.045),
+    0 8px 18px rgba(0,0,0,0.16);
   transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    opacity 0.22s ease;
+    transform 0.24s ease,
+    box-shadow 0.24s ease,
+    opacity 0.24s ease,
+    border-color 0.24s ease;
   -webkit-tap-highlight-color: transparent;
   perspective: 800px;
 }
@@ -281,10 +316,10 @@ body[data-ato="3"] .ato2Thought{
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.12)),
-    radial-gradient(circle at 50% 40%, rgba(143,191,186,0.16), transparent 70%);
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.10)),
+    radial-gradient(circle at 50% 40%, rgba(143,191,186,0.15), transparent 70%);
   opacity: 0;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.24s ease;
   pointer-events: none;
 }
 
@@ -295,16 +330,16 @@ body[data-ato="3"] .ato2Thought{
   align-items: center;
   justify-content: center;
   text-transform: lowercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.36px;
   font-size: 12px;
   color: rgba(228,238,248,0.90);
   background:
-    linear-gradient(180deg, rgba(16,21,28,0.92), rgba(10,14,20,0.96));
+    linear-gradient(180deg, rgba(16,21,28,0.93), rgba(10,14,20,0.97));
   border-radius: inherit;
   transition:
-    opacity 0.36s ease,
-    transform 0.36s ease,
-    background 0.36s ease;
+    opacity 0.38s ease,
+    transform 0.38s ease,
+    background 0.38s ease;
   transform-origin: center;
   backface-visibility: hidden;
 }
@@ -312,9 +347,9 @@ body[data-ato="3"] .ato2Thought{
 .ato4Piece.is-current{
   cursor: pointer;
   box-shadow:
-    inset 0 0 0 1px rgba(143,191,186,0.22),
-    0 10px 24px rgba(0,0,0,0.24),
-    0 0 0 1px rgba(143,191,186,0.08);
+    inset 0 0 0 1px rgba(143,191,186,0.20),
+    0 10px 24px rgba(0,0,0,0.22),
+    0 0 0 1px rgba(143,191,186,0.06);
 }
 
 .ato4Piece.is-current::before{
@@ -324,32 +359,32 @@ body[data-ato="3"] .ato2Thought{
 .ato4Piece.is-current:hover{
   transform: translateY(-1px) scale(1.01);
   box-shadow:
-    inset 0 0 0 1px rgba(143,191,186,0.28),
-    0 12px 28px rgba(0,0,0,0.28),
-    0 0 18px rgba(143,191,186,0.08);
+    inset 0 0 0 1px rgba(143,191,186,0.24),
+    0 12px 28px rgba(0,0,0,0.26),
+    0 0 18px rgba(143,191,186,0.07);
 }
 
 .ato4Piece.is-current:active{
-  transform: scale(0.985);
+  transform: scale(0.988);
 }
 
 .ato4Piece.is-current:not(.is-revealed):not(.is-revealing)::after{
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, transparent 10%, rgba(255,255,255,0.09) 46%, transparent 72%);
+  background: linear-gradient(120deg, transparent 10%, rgba(255,255,255,0.08) 46%, transparent 72%);
   transform: translateX(-120%);
-  animation: ato4Shimmer 2.8s ease-in-out infinite;
+  animation: ato4Shimmer 3.1s ease-in-out infinite;
   pointer-events: none;
 }
 
 .ato4Piece.is-locked{
-  opacity: 0.52;
+  opacity: 0.48;
   background:
-    linear-gradient(180deg, rgba(15,18,24,0.84), rgba(8,10,14,0.92));
+    linear-gradient(180deg, rgba(14,17,22,0.82), rgba(8,10,14,0.90));
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.035),
-    0 8px 18px rgba(0,0,0,0.12);
+    inset 0 0 0 1px rgba(255,255,255,0.03),
+    0 8px 18px rgba(0,0,0,0.10);
 }
 
 .ato4Piece.is-locked .ato4PieceInner{
@@ -359,8 +394,8 @@ body[data-ato="3"] .ato2Thought{
 .ato4Piece.is-revealed{
   cursor: default;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.04),
-    0 8px 20px rgba(0,0,0,0.20);
+    inset 0 0 0 1px rgba(255,255,255,0.035),
+    0 9px 20px rgba(0,0,0,0.19);
 }
 
 .ato4Piece.is-revealed .ato4PieceInner{
@@ -393,25 +428,25 @@ body[data-ato="3"] .ato2Thought{
 @keyframes ato4Shimmer{
   0%{ transform: translateX(-120%); opacity: 0; }
   20%{ opacity: 1; }
-  60%{ transform: translateX(120%); opacity: 0.9; }
+  60%{ transform: translateX(120%); opacity: 0.82; }
   100%{ transform: translateX(120%); opacity: 0; }
 }
 
 .ato4Hint{
-  margin: 12px auto 0;
+  margin: 14px auto 0;
   width: min(420px, 100%);
   text-align: center;
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: rgba(228,238,248,0.84);
-  letter-spacing: 0.25px;
+  letter-spacing: 0.22px;
 }
 
 .ato4Puzzle.is-complete{
-  border-color: rgba(143,191,186,0.24);
+  border-color: rgba(143,191,186,0.22);
   box-shadow:
-    0 16px 42px rgba(0,0,0,0.24),
-    0 0 28px rgba(143,191,186,0.06),
+    0 16px 42px rgba(0,0,0,0.22),
+    0 0 28px rgba(143,191,186,0.05),
     inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
@@ -427,7 +462,7 @@ body[data-ato="3"] .ato2Thought{
 
 .ato4TouchWord{
   color: rgba(171,214,209,0.98);
-  border-bottom: 1px solid rgba(171,214,209,0.42);
+  border-bottom: 1px solid rgba(171,214,209,0.36);
   padding-bottom: 1px;
   cursor: pointer;
   transition: color 0.22s ease, border-color 0.22s ease, text-shadow 0.22s ease;
@@ -435,29 +470,29 @@ body[data-ato="3"] .ato2Thought{
 
 .ato4TouchWord:hover{
   color: rgba(213,238,235,1);
-  border-color: rgba(213,238,235,0.68);
-  text-shadow: 0 0 10px rgba(171,214,209,0.14);
+  border-color: rgba(213,238,235,0.58);
+  text-shadow: 0 0 10px rgba(171,214,209,0.12);
 }
 
 .ato4TouchReveal{
   position: absolute;
   left: 0;
   top: 100%;
-  margin-top: 8px;
+  margin-top: 10px;
   min-width: 220px;
   max-width: min(320px, 70vw);
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(143,191,186,0.20);
+  padding: 11px 13px;
+  border-radius: 16px;
+  border: 1px solid rgba(143,191,186,0.18);
   background: rgba(8,12,14,0.96);
   color: rgba(216,236,234,0.94);
-  line-height: 1.45;
+  line-height: 1.5;
   white-space: normal;
   opacity: 0;
   pointer-events: none;
   transform: translateY(6px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.22);
-  transition: opacity 0.22s ease, transform 0.22s ease;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.20);
+  transition: opacity 0.24s ease, transform 0.24s ease;
   z-index: 30;
 }
 
@@ -468,14 +503,15 @@ body[data-ato="3"] .ato2Thought{
 }
 
 .ato4ScrollWrap{
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .ato4ScrollReveal{
   opacity: 0;
   transform: translateY(8px);
   color: rgba(214,233,230,0.92);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  line-height: 1.7;
+  transition: opacity 0.56s ease, transform 0.56s ease;
 }
 
 .ato4ScrollReveal.show{
@@ -486,7 +522,7 @@ body[data-ato="3"] .ato2Thought{
 @media (max-width: 640px){
   .ato4Puzzle{
     width: min(100%, 100%);
-    padding: 14px 10px 12px;
+    padding: 15px 10px 13px;
     border-radius: 18px;
   }
 
