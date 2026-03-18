@@ -30,6 +30,7 @@ Pra te lembrar.
 
 Que eu escolhi você.
 E que eu vou continuar escolhendo.`,
+
   60: `Eu lembro como se eu estivesse te contando agora.
 
 Era 19:00.
@@ -50,6 +51,7 @@ daquele tipo que você tenta esconder e não consegue.
 
 Talvez o filme tenha sido qualquer coisa.
 Mas você… já tava ficando.`,
+
   90: `Eu lembro daquela noite.
 
 A gente tinha discutido.
@@ -119,6 +121,7 @@ Porque eu sei
 que se for preciso,
 
 a gente escolhe de novo.`,
+
   120: `Eu lembro exatamente do nosso primeiro beijo.
 
 Naquele momento parecia simples,
@@ -145,6 +148,7 @@ Foi o momento
 em que eu entendi
 que nossa história
 tinha realmente começado.`,
+
   150: `A viagem para o casamento da minha prima
 é uma lembrança que sempre volta na minha cabeça.
 
@@ -167,6 +171,7 @@ Era a sensação
 de que estávamos construindo memórias
 que um dia olharíamos para trás
 e sorriríamos juntos.`,
+
   180: `Eu lembro daquele dia que a gente começou a falar
 sobre filhos.
 
@@ -196,7 +201,8 @@ a gente não estava só vivendo
 um relacionamento.
 
 A gente estava aprendendo
-a construir uma vida juntos.`,,
+a construir uma vida juntos.`,
+
   210: `Eu sempre lembro das vezes
 que a gente fez bolo juntos.
 
@@ -224,7 +230,8 @@ Hoje eu vejo que esses momentos simples
 foram alguns dos mais importantes.
 
 Porque são eles que mostram
-como a gente funciona de verdade.`,,
+como a gente funciona de verdade.`,
+
   240: `Os domingos na sua casa
 viraram algo muito maior
 do que eu esperava.
@@ -256,10 +263,11 @@ Um lugar onde eu quero estar.
 
 Um lugar que,
 de alguma forma,
-também virou casa pra mim.`,,
-  270:`Em breve...`,
-  300:`Em breve...`,
-  330:`Em breve...`,
+também virou casa pra mim.`,
+
+  270: `Em breve...`,
+  300: `Em breve...`,
+  330: `Em breve...`,
 };
 
 function isMemoryDay(dia){
