@@ -89,4 +89,3 @@ function getAto4Interacao(dia) {
   }
   return null;
 }
-
