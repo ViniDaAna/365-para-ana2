@@ -7,7 +7,7 @@ window.ATO4_PUZZLE = {
 
   titulo: "Uma parte de nós.",
   hintAntes: "toque para revelar",
-  hintDepois: "mais uma peça da nossa história.",
+  hintDepois: "mais uma peça guardada da nossa história.",
   fraseFinal: "Peça por peça, fomos construindo algo que hoje eu chamo de nós.",
 
   /**
