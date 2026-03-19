@@ -1,0 +1,292 @@
+#ato3Fogueira{
+  width:100%;
+  margin:28px 0 10px;
+}
+
+.ato3Fogueira.hidden{
+  display:none;
+}
+
+.ato3FireWrap{
+  position:relative;
+  width:min(100%, 420px);
+  margin:0 auto;
+  padding:18px 18px 8px;
+  min-height:240px;
+  text-align:center;
+}
+
+.ato3Glow{
+  position:absolute;
+  inset:auto 50% 18px;
+  width:180px;
+  height:120px;
+  transform:translateX(-50%);
+  background:radial-gradient(circle, rgba(210,95,37,.22) 0%, rgba(210,95,37,.08) 42%, rgba(210,95,37,0) 72%);
+  filter:blur(8px);
+  opacity:.22;
+  pointer-events:none;
+  transition:opacity .6s ease, transform .6s ease;
+}
+
+.ato3PaperBlock{
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:10px;
+}
+
+.ato3PaperBlock.hidden,
+.ato3Hint.hidden{
+  visibility:hidden;
+}
+
+.ato3Paper{
+  max-width:290px;
+  border:none;
+  background:linear-gradient(180deg, rgba(242,228,197,.96), rgba(223,205,170,.92));
+  color:#3a241a;
+  padding:14px 18px;
+  border-radius:2px;
+  box-shadow:0 14px 28px rgba(0,0,0,.18), 0 2px 0 rgba(88,56,36,.14);
+  font:inherit;
+  font-size:.98rem;
+  line-height:1.5;
+  cursor:pointer;
+  transform:rotate(-1.2deg);
+  transition:transform .28s ease, box-shadow .28s ease, opacity .28s ease;
+  position:relative;
+}
+
+.ato3Paper:hover{
+  transform:rotate(-.2deg) translateY(-2px);
+  box-shadow:0 18px 36px rgba(0,0,0,.22), 0 2px 0 rgba(88,56,36,.14);
+}
+
+.ato3Paper.is-burning{
+  opacity:0;
+  transform:translateY(-10px) scale(.96);
+}
+
+.ato3PaperLaunch{
+  position:absolute;
+  left:50%;
+  top:26px;
+  width:min(280px, 78%);
+  transform:translateX(-50%) rotate(-1deg);
+  padding:14px 18px;
+  border-radius:2px;
+  background:linear-gradient(180deg, rgba(242,228,197,.94), rgba(223,205,170,.88));
+  color:#3a241a;
+  font-size:.98rem;
+  line-height:1.5;
+  box-shadow:0 14px 28px rgba(0,0,0,.18);
+  opacity:0;
+  pointer-events:none;
+}
+
+.ato3PaperLaunch.show{
+  opacity:1;
+}
+
+.ato3PaperLaunch.fly{
+  animation:ato3PaperFly .9s cubic-bezier(.2,.7,.18,1) forwards;
+}
+
+@keyframes ato3PaperFly{
+  0%{ transform:translateX(-50%) translateY(0) rotate(-1deg) scale(1); opacity:1; }
+  72%{ transform:translateX(-50%) translateY(116px) rotate(6deg) scale(.78); opacity:.92; }
+  100%{ transform:translateX(-50%) translateY(152px) rotate(12deg) scale(.46); opacity:0; }
+}
+
+.ato3FireScene{
+  position:relative;
+  width:180px;
+  height:150px;
+  margin:0 auto;
+}
+
+.ato3Ash{
+  position:absolute;
+  left:50%;
+  bottom:16px;
+  width:140px;
+  height:28px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(92,58,42,.42), rgba(40,24,18,.05) 72%, rgba(0,0,0,0) 78%);
+}
+
+.ato3Logs{
+  position:absolute;
+  inset:auto 50% 24px;
+  width:110px;
+  height:44px;
+  transform:translateX(-50%);
+}
+
+.ato3Logs span{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:56px;
+  height:10px;
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(76,47,33,.95), rgba(103,63,45,.92), rgba(68,41,28,.96));
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+
+.ato3Logs span:nth-child(1){ transform:translateX(-72%) rotate(28deg); }
+.ato3Logs span:nth-child(2){ transform:translateX(-28%) rotate(-28deg); }
+.ato3Logs span:nth-child(3){ width:48px; transform:translateX(-50%) translateY(-2px) rotate(4deg); opacity:.82; }
+
+.ato3Flames{
+  position:absolute;
+  left:50%;
+  bottom:28px;
+  width:120px;
+  height:110px;
+  transform:translateX(-50%);
+}
+
+.flame{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform-origin:50% 100%;
+  border-radius:55% 55% 42% 42% / 70% 70% 30% 30%;
+  opacity:0;
+  filter:blur(.15px);
+  transition:opacity .6s ease, transform .6s ease, height .6s ease, width .6s ease;
+  animation:ato3FlameFlicker 2.8s ease-in-out infinite;
+}
+
+.flame-1{ width:34px; height:56px; margin-left:-17px; background:linear-gradient(180deg, rgba(255,221,151,.95), rgba(219,100,39,.92) 65%, rgba(146,38,18,.65)); }
+.flame-2{ width:24px; height:42px; margin-left:-34px; background:linear-gradient(180deg, rgba(255,205,122,.88), rgba(195,74,30,.9)); animation-delay:-.6s; }
+.flame-3{ width:24px; height:42px; margin-left:10px; background:linear-gradient(180deg, rgba(255,205,122,.88), rgba(195,74,30,.9)); animation-delay:-1.2s; }
+.flame-4{ width:16px; height:28px; margin-left:-8px; background:linear-gradient(180deg, rgba(255,236,188,.9), rgba(232,129,52,.92)); animation-delay:-1.7s; }
+
+@keyframes ato3FlameFlicker{
+  0%,100%{ transform:translateY(0) scaleY(1) rotate(0deg); }
+  25%{ transform:translateY(-2px) scaleY(1.06) rotate(-2deg); }
+  55%{ transform:translateY(1px) scaleY(.95) rotate(2deg); }
+  80%{ transform:translateY(-1px) scaleY(1.03) rotate(-1deg); }
+}
+
+.ato3Embers{
+  position:absolute;
+  left:50%;
+  bottom:38px;
+  width:90px;
+  height:24px;
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+
+.ato3Embers::before,
+.ato3Embers::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 60%, rgba(255,173,79,.38) 0 2px, transparent 3px),
+    radial-gradient(circle at 42% 18%, rgba(255,196,127,.26) 0 1.8px, transparent 3px),
+    radial-gradient(circle at 65% 64%, rgba(255,153,87,.22) 0 1.8px, transparent 3px),
+    radial-gradient(circle at 84% 28%, rgba(255,205,122,.2) 0 1.6px, transparent 3px);
+  opacity:0;
+  animation:ato3EmbersPulse 2.6s ease-in-out infinite;
+}
+
+.ato3Embers::after{ animation-delay:-1.3s; }
+
+@keyframes ato3EmbersPulse{
+  0%,100%{ transform:translateY(0); opacity:.18; }
+  50%{ transform:translateY(-4px); opacity:.45; }
+}
+
+.ato3Hint{
+  margin-top:10px;
+  font-size:.88rem;
+  opacity:.68;
+  letter-spacing:.03em;
+}
+
+.ato3FinalText{
+  margin:18px auto 0;
+  max-width:300px;
+  font-size:1rem;
+  line-height:1.7;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .9s ease, transform .9s ease;
+}
+
+.ato3FinalText.show{
+  opacity:.92;
+  transform:translateY(0);
+}
+
+.ato3FireWrap.is-cold .ato3Glow{ opacity:.08; transform:translateX(-50%) scale(.92); }
+.ato3FireWrap.is-cold .flame-4{ opacity:.18; height:12px; width:10px; margin-left:-5px; }
+
+.ato3FireWrap.is-ember .ato3Glow{ opacity:.16; }
+.ato3FireWrap.is-ember .flame-1{ opacity:.22; height:26px; width:18px; margin-left:-9px; }
+.ato3FireWrap.is-ember .flame-4{ opacity:.34; height:18px; width:12px; margin-left:-6px; }
+.ato3FireWrap.is-ember .ato3Embers::before,
+.ato3FireWrap.is-ember .ato3Embers::after{ opacity:.22; }
+
+.ato3FireWrap.is-small .ato3Glow{ opacity:.22; }
+.ato3FireWrap.is-small .flame-1{ opacity:.66; height:44px; }
+.ato3FireWrap.is-small .flame-2,
+.ato3FireWrap.is-small .flame-3{ opacity:.34; height:28px; width:18px; }
+.ato3FireWrap.is-small .flame-4{ opacity:.5; }
+
+.ato3FireWrap.is-medium .ato3Glow{ opacity:.32; transform:translateX(-50%) scale(1.03); }
+.ato3FireWrap.is-medium .flame-1{ opacity:.92; }
+.ato3FireWrap.is-medium .flame-2,
+.ato3FireWrap.is-medium .flame-3{ opacity:.68; }
+.ato3FireWrap.is-medium .flame-4{ opacity:.8; }
+.ato3FireWrap.is-medium .ato3Embers::before,
+.ato3FireWrap.is-medium .ato3Embers::after{ opacity:.42; }
+
+.ato3FireWrap.is-strong .ato3Glow{ opacity:.42; transform:translateX(-50%) scale(1.08); }
+.ato3FireWrap.is-strong .flame-1{ opacity:1; height:68px; width:38px; margin-left:-19px; }
+.ato3FireWrap.is-strong .flame-2,
+.ato3FireWrap.is-strong .flame-3{ opacity:.86; height:54px; width:28px; }
+.ato3FireWrap.is-strong .flame-4{ opacity:.94; height:34px; width:18px; margin-left:-9px; }
+.ato3FireWrap.is-strong .ato3Embers::before,
+.ato3FireWrap.is-strong .ato3Embers::after{ opacity:.56; }
+
+.ato3FireWrap.is-peak .ato3Glow{ opacity:.52; transform:translateX(-50%) scale(1.14); }
+.ato3FireWrap.is-peak .flame-1{ opacity:1; height:76px; width:42px; margin-left:-21px; }
+.ato3FireWrap.is-peak .flame-2,
+.ato3FireWrap.is-peak .flame-3{ opacity:.96; height:60px; width:30px; }
+.ato3FireWrap.is-peak .flame-4{ opacity:1; height:40px; width:22px; margin-left:-11px; }
+.ato3FireWrap.is-peak .ato3Embers::before,
+.ato3FireWrap.is-peak .ato3Embers::after{ opacity:.7; }
+
+.ato3FireWrap.is-final-day.is-extinguishing .ato3Glow{
+  opacity:.06;
+  transform:translateX(-50%) scale(.94);
+  transition-duration:2s;
+}
+
+.ato3FireWrap.is-final-day.is-extinguishing .flame{
+  opacity:0 !important;
+  height:10px !important;
+  width:10px !important;
+  transition-duration:1.8s;
+}
+
+.ato3FireWrap.is-final-day.is-extinguishing .ato3Embers::before,
+.ato3FireWrap.is-final-day.is-extinguishing .ato3Embers::after{
+  opacity:0 !important;
+  transition:opacity 1.6s ease;
+}
+
+@media (max-width: 520px){
+  .ato3FireWrap{ padding-inline:10px; min-height:224px; }
+  .ato3Paper{ max-width:100%; font-size:.95rem; }
+  .ato3FireScene{ transform:scale(.95); transform-origin:center bottom; }
+}
