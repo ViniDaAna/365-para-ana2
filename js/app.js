@@ -245,6 +245,7 @@ function entrarModoLista(titulo){
   fecharMemoriaPage(true);
   esconderAto1UI(true);
   esconderAto2UI(true);
+  esconderAto3UI(true);
   esconderAto4UI(true);
 
   document.getElementById("tituloTopo").innerText = titulo;
@@ -631,6 +632,20 @@ function esconderAto2UI(silencioso=false){
   }
 
   cleanupAto2Closer();
+}
+
+
+function esconderAto3UI(silencioso=false){
+  const box = document.getElementById("ato3Fogueira");
+  if(!box) return;
+
+  box.classList.add("hidden");
+  box.setAttribute("aria-hidden","true");
+  box.classList.remove("is-extinguishing", "is-revealed");
+
+  if(!silencioso){
+    box.innerHTML = "";
+  }
 }
 
 function esconderAto4UI(silencioso=false){
@@ -1328,6 +1343,7 @@ function afterPoemTyped(dia, rawText){
   renderAto2UI(dia);
   renderAto2PerguntaUI(dia);
   applyAto3Underline(dia, rawText);
+  renderAto3Fogueira(dia);
   applyAto4ExtraInteraction(dia, rawText);
   renderAto4Puzzle(dia);
 }
@@ -1349,6 +1365,7 @@ function carregarPoema(dia){
   fecharMemoriaPage(true);
   esconderAto1UI(true);
   esconderAto2UI(true);
+  esconderAto3UI(true);
   esconderAto4UI(true);
 
   if(dia <= 0){
@@ -1495,4 +1512,3 @@ function verificarSenha(){
 
 setCornerDates();
 setInterval(setCornerDates, 60000);
-
