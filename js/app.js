@@ -610,16 +610,27 @@ function montarAto1FraseNoCentro(){
 function esconderAto2UI(silencioso=false){
   const linhas = document.getElementById("ato2Linhas");
   const box = document.getElementById("ato2ThoughtBox");
-  linhas.classList.add("hidden");
-  linhas.setAttribute("aria-hidden","true");
-  box.classList.add("hidden");
-  box.classList.remove("show");
-  box.setAttribute("aria-hidden","true");
-  if(!silencioso) box.textContent = "";
-  cleanupAto2Closer();
-  if(typeof hideAto2PerguntasUI === "function"){
-    hideAto2PerguntasUI(silencioso);
+  const perguntaBox = document.getElementById("ato2PerguntaBox");
+
+  if(linhas){
+    linhas.classList.add("hidden");
+    linhas.setAttribute("aria-hidden","true");
   }
+
+  if(box){
+    box.classList.add("hidden");
+    box.classList.remove("show");
+    box.setAttribute("aria-hidden","true");
+    if(!silencioso) box.textContent = "";
+  }
+
+  if(perguntaBox){
+    perguntaBox.classList.add("hidden");
+    perguntaBox.setAttribute("aria-hidden","true");
+    if(!silencioso) perguntaBox.innerHTML = "";
+  }
+
+  cleanupAto2Closer();
 }
 
 function esconderAto4UI(silencioso=false){
@@ -785,6 +796,155 @@ function closeAto2Thought(){
   }, 220);
 }
 
+
+function getAto2PerguntaDoDia(dia){
+  if(!Array.isArray(window.ATO2_PERGUNTAS)) return null;
+  return window.ATO2_PERGUNTAS.find(item => Number(item.dia) === Number(dia)) || null;
+}
+
+function getAto2RespostasSalvas(){
+  try{
+    return JSON.parse(localStorage.getItem(ATO2_RESPOSTAS_KEY) || "{}");
+  }catch(_err){
+    return {};
+  }
+}
+
+function setAto2RespostaSalva(dia, resposta){
+  const data = getAto2RespostasSalvas();
+  data[String(dia)] = {
+    resposta: String(resposta || ""),
+    respondidoEm: new Date().toISOString()
+  };
+  localStorage.setItem(ATO2_RESPOSTAS_KEY, JSON.stringify(data));
+}
+
+function renderAto2PerguntaUI(dia){
+  const box = document.getElementById("ato2PerguntaBox");
+  if(!box) return;
+
+  const emModoEspecial =
+    document.body.classList.contains("modo-arquivo") ||
+    document.body.classList.contains("capsula-mode") ||
+    document.body.classList.contains("memoria-mode");
+
+  if(emModoEspecial || getAto(dia) !== 2){
+    box.classList.add("hidden");
+    box.setAttribute("aria-hidden","true");
+    box.innerHTML = "";
+    return;
+  }
+
+  const cfg = getAto2PerguntaDoDia(dia);
+  if(!cfg){
+    box.classList.add("hidden");
+    box.setAttribute("aria-hidden","true");
+    box.innerHTML = "";
+    return;
+  }
+
+  const respostas = getAto2RespostasSalvas();
+  const jaRespondeu = Boolean(respostas[String(dia)] && String(respostas[String(dia)].resposta || "").trim());
+
+  box.classList.remove("hidden");
+  box.setAttribute("aria-hidden","false");
+  box.innerHTML = "";
+
+  const card = document.createElement("div");
+  card.className = "ato2PerguntaCard";
+
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "ato2PerguntaBtn";
+  botao.textContent = cfg.botao || "posso te perguntar algo?";
+
+  const corpo = document.createElement("div");
+  corpo.className = "ato2PerguntaCorpo hidden";
+  corpo.setAttribute("aria-hidden","true");
+
+  const pergunta = document.createElement("div");
+  pergunta.className = "ato2PerguntaTexto";
+  pergunta.textContent = cfg.pergunta || "";
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "ato2PerguntaInput";
+  textarea.rows = 4;
+  textarea.placeholder = "me responde aqui...";
+  textarea.autocomplete = "off";
+  textarea.spellcheck = false;
+
+  const acoes = document.createElement("div");
+  acoes.className = "ato2PerguntaAcoes";
+
+  const enviar = document.createElement("button");
+  enviar.type = "button";
+  enviar.className = "ato2PerguntaEnviar";
+  enviar.textContent = "Responder";
+
+  const respostaWrap = document.createElement("div");
+  respostaWrap.className = "ato2RespostaWrap hidden";
+  respostaWrap.setAttribute("aria-hidden","true");
+
+  const respostaTag = document.createElement("div");
+  respostaTag.className = "ato2RespostaTag";
+  respostaTag.textContent = "eu respondi assim";
+
+  const respostaTexto = document.createElement("div");
+  respostaTexto.className = "ato2RespostaTexto";
+
+  respostaWrap.appendChild(respostaTag);
+  respostaWrap.appendChild(respostaTexto);
+
+  function abrirPergunta(){
+    botao.classList.add("hidden");
+    corpo.classList.remove("hidden");
+    corpo.setAttribute("aria-hidden","false");
+    setTimeout(() => textarea.focus(), 60);
+  }
+
+  function mostrarResposta(){
+    corpo.classList.add("hidden");
+    corpo.setAttribute("aria-hidden","true");
+    respostaTexto.textContent = cfg.resposta || "";
+    respostaWrap.classList.remove("hidden");
+    respostaWrap.setAttribute("aria-hidden","false");
+  }
+
+  if(jaRespondeu){
+    botao.classList.add("hidden");
+    mostrarResposta();
+  } else {
+    botao.addEventListener("click", abrirPergunta);
+
+    enviar.addEventListener("click", () => {
+      const valor = String(textarea.value || "").trim();
+      if(!valor){
+        textarea.focus();
+        return;
+      }
+
+      setAto2RespostaSalva(dia, valor);
+      enviar.disabled = true;
+      textarea.disabled = true;
+
+      setTimeout(() => {
+        mostrarResposta();
+      }, 900);
+    });
+  }
+
+  acoes.appendChild(enviar);
+  corpo.appendChild(pergunta);
+  corpo.appendChild(textarea);
+  corpo.appendChild(acoes);
+
+  card.appendChild(botao);
+  card.appendChild(corpo);
+  card.appendChild(respostaWrap);
+
+  box.appendChild(card);
+}
+
 function buildAto3ThoughtFromKeyword(keywordRaw, day){
   const k = (keywordRaw || "").toLowerCase();
 
@@ -854,6 +1014,33 @@ function applyAto3Underline(dia, rawText){
       e.stopPropagation();
       openAto2Thought(u.getAttribute("data-thought"));
     });
+  }
+}
+
+function applyAto2Underline(dia, rawText){
+  const poemaEl = document.getElementById("poema");
+  if(getAto(dia) !== 2) return;
+  if(!rawText || !rawText.trim()) return;
+
+  const target = pickUnderlineTarget(rawText);
+  if(!target) return;
+
+  const before = escapeHtml(rawText.slice(0, target.idx));
+  const word = escapeHtml(target.word);
+  const after = escapeHtml(rawText.slice(target.idx + target.word.length));
+
+  const thought = buildAto2ThoughtFromKeyword(target.word, rawText);
+
+  poemaEl.innerHTML = `${before}<span class="ato2U" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
+
+  const u = poemaEl.querySelector(".ato2U");
+  if(u){
+    u.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const t = u.getAttribute("data-thought") || "";
+      openAto2Thought(t);
+    }, {passive:false});
   }
 }
 
@@ -1139,9 +1326,7 @@ function afterPoemTyped(dia, rawText){
   }
 
   renderAto2UI(dia);
-  if(typeof renderAto2PerguntasUI === "function"){
-    renderAto2PerguntasUI(dia);
-  }
+  renderAto2PerguntaUI(dia);
   applyAto3Underline(dia, rawText);
   applyAto4ExtraInteraction(dia, rawText);
   renderAto4Puzzle(dia);
@@ -1310,3 +1495,4 @@ function verificarSenha(){
 
 setCornerDates();
 setInterval(setCornerDates, 60000);
+
