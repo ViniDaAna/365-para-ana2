@@ -1,3 +1,80 @@
+
+const ATO2_STORAGE_KEY = "projeto365_ato2_respostas";
+const ATO2_PERGUNTAS = [
+  {
+    dia: 32,
+    botao: "posso te perguntar uma coisa?",
+    pergunta: "quando foi que você percebeu que tinha alguma coisa diferente entre nós?",
+    resposta: "eu não sei te apontar um segundo exato. não foi uma virada brusca. foi mais como se, aos poucos, você tivesse ido ocupando espaço em mim sem pedir licença. quando eu vi, já era você nos meus pensamentos, no meu cuidado, no meu dia."
+  },
+  {
+    dia: 36,
+    botao: "me deixa te perguntar algo…",
+    pergunta: "o que em mim mais te pegou sem você perceber?",
+    resposta: "teu sorriso. tem um jeito teu de sorrir que desmonta qualquer defesa minha. às vezes eu tava normal, pensando em qualquer coisa, e bastava lembrar do teu sorriso pra mudar meu dia inteiro."
+  },
+  {
+    dia: 40,
+    botao: "tem uma coisa que eu queria saber",
+    pergunta: "o que você enxerga em mim que talvez eu mesma não veja?",
+    resposta: "eu enxergo tua insegurança, mas não de um jeito ruim. eu enxergo as partes de você que tentam se proteger, que às vezes duvidam do próprio valor. e talvez eu veja isso tão fácil porque também existe em mim."
+  },
+  {
+    dia: 45,
+    botao: "me responde uma coisa?",
+    pergunta: "você pensa em mim com frequência?",
+    resposta: "penso mais do que consigo explicar sem parecer exagerado. você aparece no meio do meu dia, no nada, em detalhe pequeno, em coisa boba. não é esforço. simplesmente acontece."
+  },
+  {
+    dia: 50,
+    botao: "posso ser sincero com você?",
+    pergunta: "o que você sentiu quando percebeu que nossa conexão era real?",
+    resposta: "senti que tinha alguma coisa acontecendo antes mesmo de eu conseguir colocar nome. como se eu já te reconhecesse de algum jeito, como se a conexão viesse antes da certeza."
+  },
+  {
+    dia: 55,
+    botao: "posso te perguntar isso?",
+    pergunta: "do que você tem medo quando o assunto é nós dois?",
+    resposta: "eu tenho medo de não ser suficiente. medo de te amar de verdade, do meu jeito, e ainda assim achar que talvez não baste. às vezes eu olho pra você e penso em como você é linda, especial, e isso faz minhas inseguranças falarem alto."
+  },
+  {
+    dia: 60,
+    botao: "me deixa te perguntar algo…",
+    pergunta: "você confia em mim de verdade?",
+    resposta: "confio. mesmo com minhas inseguranças, eu confio em você. não porque eu não tenha medo, mas porque em você eu sinto verdade. e isso pesa muito pra mim."
+  },
+  {
+    dia: 65,
+    botao: "tem uma coisa aqui…",
+    pergunta: "o que mais te custa quando você precisa se abrir comigo?",
+    resposta: "o medo de me mostrar inteiro e não saber como isso vai ser recebido. se abrir é bonito, mas também dá medo. porque quando eu falo de verdade, eu tô te entregando partes minhas que não mostro fácil."
+  },
+  {
+    dia: 70,
+    botao: "posso te perguntar uma coisa?",
+    pergunta: "o que você mais gosta no jeito que a gente fica junto?",
+    resposta: "o chamego. o carinho. esse jeito nosso de ficar perto, de transformar coisa simples em abrigo. gosto de quando parece que o mundo diminui um pouco só porque eu tô com você."
+  },
+  {
+    dia: 75,
+    botao: "me responde isso?",
+    pergunta: "você já imaginou um futuro comigo?",
+    resposta: "já. e não foi pouco. eu já pensei em casa, em rotina, em filhos, em construir uma vida. pensei em nós dois vivendo coisa comum com amor de verdade. até no salsichinha mofado eu pensei."
+  },
+  {
+    dia: 80,
+    botao: "posso ser sincero com você?",
+    pergunta: "o que mais te preocupa quando pensa no nosso futuro?",
+    resposta: "às vezes eu penso nas diferenças entre a nossa realidade, na idade, nas fases, em tudo que poderia complicar. não porque eu queira desistir, mas porque eu levo a gente a sério o suficiente pra pensar nisso de verdade."
+  },
+  {
+    dia: 88,
+    botao: "me deixa te perguntar algo…",
+    pergunta: "desde que eu apareci, o que mudou em você?",
+    resposta: "eu fiquei mais aberto, mais humano, mais disposto a sentir sem fugir tanto. você mexeu em partes minhas que estavam fechadas. de algum jeito, contigo, eu fui me tornando alguém mais inteiro."
+  }
+];
+
 function showModoTeste(dia){
   const el = document.getElementById("modoTeste");
   if(dia === null){
@@ -610,13 +687,23 @@ function montarAto1FraseNoCentro(){
 function esconderAto2UI(silencioso=false){
   const linhas = document.getElementById("ato2Linhas");
   const box = document.getElementById("ato2ThoughtBox");
+  const perguntaBox = document.getElementById("ato2PerguntaBox");
+
   linhas.classList.add("hidden");
   linhas.setAttribute("aria-hidden","true");
+
   box.classList.add("hidden");
   box.classList.remove("show");
   box.setAttribute("aria-hidden","true");
   if(!silencioso) box.textContent = "";
   cleanupAto2Closer();
+
+  if(perguntaBox){
+    perguntaBox.classList.add("hidden");
+    perguntaBox.classList.remove("show");
+    perguntaBox.setAttribute("aria-hidden","true");
+    if(!silencioso) perguntaBox.innerHTML = "";
+  }
 }
 
 function esconderAto4UI(silencioso=false){
@@ -751,7 +838,7 @@ function openAto2Thought(text){
 
   window.__ato2Closer = (e) => {
     const poemaEl = document.getElementById("poema");
-    const u = poemaEl.querySelector(".ato2U, .ato3U");
+    const u = poemaEl.querySelector(".ato3U");
     if(!box.classList.contains("hidden")){
       if(box.contains(e.target)) return;
       if(u && u.contains(e.target)) return;
@@ -854,31 +941,167 @@ function applyAto3Underline(dia, rawText){
   }
 }
 
-function applyAto2Underline(dia, rawText){
-  const poemaEl = document.getElementById("poema");
-  if(getAto(dia) !== 2) return;
-  if(!rawText || !rawText.trim()) return;
+function getAto2PerguntaDoDia(dia){
+  return ATO2_PERGUNTAS.find((item) => item.dia === Number(dia)) || null;
+}
 
-  const target = pickUnderlineTarget(rawText);
-  if(!target) return;
-
-  const before = escapeHtml(rawText.slice(0, target.idx));
-  const word = escapeHtml(target.word);
-  const after = escapeHtml(rawText.slice(target.idx + target.word.length));
-
-  const thought = buildAto2ThoughtFromKeyword(target.word, rawText);
-
-  poemaEl.innerHTML = `${before}<span class="ato2U" data-thought="${escapeHtml(thought)}">${word}</span>${after}`;
-
-  const u = poemaEl.querySelector(".ato2U");
-  if(u){
-    u.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const t = u.getAttribute("data-thought") || "";
-      openAto2Thought(t);
-    }, {passive:false});
+function getAto2RespostasSalvas(){
+  try{
+    const raw = localStorage.getItem(ATO2_STORAGE_KEY);
+    if(!raw) return {};
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === "object") ? parsed : {};
+  }catch(e){
+    return {};
   }
+}
+
+function salvarAto2Resposta(dia, respostaDela){
+  const respostas = getAto2RespostasSalvas();
+  respostas[String(dia)] = {
+    respostaDela: String(respostaDela || "").trim(),
+    ts: Date.now()
+  };
+  localStorage.setItem(ATO2_STORAGE_KEY, JSON.stringify(respostas));
+}
+
+function getAto2RespostaDoDia(dia){
+  const respostas = getAto2RespostasSalvas();
+  return respostas[String(dia)] || null;
+}
+
+function renderAto2PerguntaBox(dia){
+  const box = document.getElementById("ato2PerguntaBox");
+  if(!box) return;
+
+  const item = getAto2PerguntaDoDia(dia);
+
+  box.innerHTML = "";
+  box.classList.add("hidden");
+  box.classList.remove("show");
+  box.setAttribute("aria-hidden","true");
+
+  if(!item) return;
+
+  const salva = getAto2RespostaDoDia(dia);
+
+  const shell = document.createElement("div");
+  shell.className = "ato2AskShell";
+
+  const glow = document.createElement("div");
+  glow.className = "ato2AskGlow";
+  shell.appendChild(glow);
+
+  if(salva && salva.respostaDela){
+    const header = document.createElement("div");
+    header.className = "ato2AskAnsweredTag";
+    header.textContent = "eu respondi assim…";
+
+    const resposta = document.createElement("div");
+    resposta.className = "ato2AnswerText";
+    resposta.textContent = item.resposta;
+
+    shell.appendChild(header);
+    shell.appendChild(resposta);
+  } else {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ato2AskBtn";
+    btn.textContent = item.botao;
+
+    const panel = document.createElement("div");
+    panel.className = "ato2QuestionPanel hidden";
+
+    const pergunta = document.createElement("div");
+    pergunta.className = "ato2QuestionText";
+    pergunta.textContent = item.pergunta;
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "ato2QuestionInput";
+    textarea.rows = 4;
+    textarea.placeholder = "me responde do seu jeito…";
+    textarea.setAttribute("maxlength", "900");
+    textarea.setAttribute("aria-label", item.pergunta);
+
+    const actions = document.createElement("div");
+    actions.className = "ato2QuestionActions";
+
+    const submit = document.createElement("button");
+    submit.type = "button";
+    submit.className = "ato2QuestionSubmit";
+    submit.textContent = "te responder";
+
+    const hint = document.createElement("div");
+    hint.className = "ato2QuestionHint";
+    hint.textContent = " ";
+
+    btn.onclick = () => {
+      btn.classList.add("hidden");
+      panel.classList.remove("hidden");
+      requestAnimationFrame(() => {
+        panel.classList.add("show");
+        textarea.focus();
+      });
+    };
+
+    const enviar = () => {
+      const texto = textarea.value.trim();
+      if(!texto){
+        hint.textContent = "escreve sua resposta primeiro.";
+        textarea.focus();
+        return;
+      }
+
+      hint.textContent = " ";
+      submit.disabled = true;
+      textarea.disabled = true;
+
+      salvarAto2Resposta(dia, texto);
+
+      panel.classList.remove("show");
+      shell.classList.add("is-answered");
+
+      setTimeout(() => {
+        shell.innerHTML = "";
+
+        const header = document.createElement("div");
+        header.className = "ato2AskAnsweredTag";
+        header.textContent = "eu respondi assim…";
+
+        const resposta = document.createElement("div");
+        resposta.className = "ato2AnswerText";
+        resposta.textContent = item.resposta;
+
+        shell.appendChild(glow);
+        shell.appendChild(header);
+        shell.appendChild(resposta);
+      }, 420);
+    };
+
+    submit.onclick = enviar;
+
+    textarea.addEventListener("keydown", (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        e.preventDefault();
+        enviar();
+      }
+    });
+
+    actions.appendChild(submit);
+    panel.appendChild(pergunta);
+    panel.appendChild(textarea);
+    panel.appendChild(actions);
+    panel.appendChild(hint);
+
+    shell.appendChild(btn);
+    shell.appendChild(panel);
+  }
+
+  box.appendChild(shell);
+  box.classList.remove("hidden");
+  box.setAttribute("aria-hidden","false");
+  void box.offsetWidth;
+  box.classList.add("show");
 }
 
 function renderAto2UI(dia){
@@ -893,6 +1116,7 @@ function renderAto2UI(dia){
   }
   linhas.classList.remove("hidden");
   linhas.setAttribute("aria-hidden","false");
+  renderAto2PerguntaBox(dia);
 }
 
 function getAto4PuzzleBgPosition(piece, gridSize){
@@ -1163,7 +1387,6 @@ function afterPoemTyped(dia, rawText){
   }
 
   renderAto2UI(dia);
-  applyAto2Underline(dia, rawText);
   applyAto3Underline(dia, rawText);
   applyAto4ExtraInteraction(dia, rawText);
   renderAto4Puzzle(dia);
