@@ -234,15 +234,9 @@ body[data-ato="3"] .ato2Thought{
   width: min(56ch, 100%);
   max-width: 560px;
   margin: 16px auto 6px auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .ato2PerguntaCard{
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.03);
   border-radius: 20px;
