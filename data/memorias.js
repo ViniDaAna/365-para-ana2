@@ -2,36 +2,7 @@ const MEMORY_INTERVAL = 30;
 const FINAL_LETTER_DAY = 365;
 
 const MEMORIAS = {
-  30: `Naquele dia eu decidi.
-
-Eu preciso te contar uma coisa.
-
-O Projeto 365 não nasceu num dia perfeito.
-Nasceu num dia comum. Um daqueles dias em que a cabeça fica cheia e o peito fica meio silencioso.
-
-Eu tava pensando em você — do jeito que a gente pensa quando a pessoa já mora na gente, sem pedir licença.
-E eu me peguei com medo.
-
-Medo de deixar o tempo levar o que eu sinto.
-Medo de amar e não saber mostrar direito.
-Medo de você não enxergar o tamanho do que eu guardo.
-
-Aí eu pensei: “eu preciso criar um jeito de te provar constância.”
-Não com promessa. Com presença.
-
-E foi aí que a ideia apareceu:
-um lugar só nosso. Escuro, elegante, simples… como se fosse um arquivo secreto.
-E dentro, uma coisa que ninguém consegue fingir por muito tempo:
-
-todo dia, eu estar aqui.
-
-Não pra te prender.
-Pra te lembrar.
-
-Que eu escolhi você.
-E que eu vou continuar escolhendo.`,
-
-  60: `Eu lembro como se eu estivesse te contando agora.
+  30: `Eu lembro como se eu estivesse te contando agora.
 
 Era 19:00.
 A gente no shopping, indo pro cinema com aquela mistura de empolgação e nervoso que dá vontade de fingir que não existe.
@@ -52,6 +23,44 @@ daquele tipo que você tenta esconder e não consegue.
 Talvez o filme tenha sido qualquer coisa.
 Mas você… já tava ficando.`,
 
+  60: `eu lembro do dia que fui na sua casa pela primeira vez
+pra conhecer seus pais
+
+não era só mais um dia normal pra mim
+
+eu tava nervoso…
+não pelo ambiente, nem pela situação
+mas por você
+
+eu queria que desse certo
+queria que eles olhassem pra mim
+e vissem alguém que realmente valesse a pena estar do seu lado
+
+eu ficava pensando em cada detalhe
+no que falar, como agir
+mas no fundo…
+o que mais pesava era isso:
+
+eu não queria estragar algo que já era tão importante pra mim
+
+e aí, no meio de tudo aquilo
+entre conversa, risadas e momentos simples
+
+eu percebi uma coisa
+
+eu não tava ali só te conhecendo mais
+
+eu tava, sem perceber
+começando a fazer parte da sua vida de verdade
+
+e naquele dia
+ficou claro pra mim
+
+isso aqui não era só sobre nós dois
+
+era algo que eu queria construir
+de verdade`,
+  
   90: `Eu lembro daquela noite.
 
 A gente tinha discutido.
