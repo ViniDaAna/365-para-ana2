@@ -634,7 +634,6 @@ function esconderAto2UI(silencioso=false){
   cleanupAto2Closer();
 }
 
-
 function esconderAto3UI(silencioso=false){
   const box = document.getElementById("ato3Fogueira");
   if(!box) return;
@@ -811,7 +810,6 @@ function closeAto2Thought(){
   }, 220);
 }
 
-
 function getAto2PerguntaDoDia(dia){
   if(!Array.isArray(window.ATO2_PERGUNTAS)) return null;
   return window.ATO2_PERGUNTAS.find(item => Number(item.dia) === Number(dia)) || null;
@@ -826,12 +824,16 @@ function getAto2RespostasSalvas(){
 }
 
 function setAto2RespostaSalva(dia, resposta){
-  const data = getAto2RespostasSalvas();
-  data[String(dia)] = {
-    resposta: String(resposta || ""),
-    respondidoEm: new Date().toISOString()
-  };
-  localStorage.setItem(ATO2_RESPOSTAS_KEY, JSON.stringify(data));
+  try{
+    const data = getAto2RespostasSalvas();
+    data[String(dia)] = {
+      resposta: String(resposta || ""),
+      respondidoEm: new Date().toISOString()
+    };
+    localStorage.setItem(ATO2_RESPOSTAS_KEY, JSON.stringify(data));
+  }catch(_err){
+    // evita que falha de localStorage quebre a UI
+  }
 }
 
 function renderAto2PerguntaUI(dia){
@@ -859,7 +861,10 @@ function renderAto2PerguntaUI(dia){
   }
 
   const respostas = getAto2RespostasSalvas();
-  const jaRespondeu = Boolean(respostas[String(dia)] && String(respostas[String(dia)].resposta || "").trim());
+  const respostaSalva = respostas[String(dia)] && typeof respostas[String(dia)].resposta === "string"
+    ? respostas[String(dia)].resposta
+    : "";
+  const jaRespondeu = Boolean(String(respostaSalva).trim());
 
   box.classList.remove("hidden");
   box.setAttribute("aria-hidden","false");
@@ -923,30 +928,33 @@ function renderAto2PerguntaUI(dia){
     respostaTexto.textContent = String(textoResposta || "");
     respostaWrap.classList.remove("hidden");
     respostaWrap.setAttribute("aria-hidden","false");
+    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   if(jaRespondeu){
     botao.classList.add("hidden");
-    mostrarResposta(respostas[String(dia)].resposta || "");
+    mostrarResposta(respostaSalva);
   } else {
     botao.addEventListener("click", abrirPergunta);
 
-    enviar.addEventListener("click", () => {
+    enviar.onclick = () => {
       const valor = String(textarea.value || "").trim();
       if(!valor){
         textarea.focus();
         return;
       }
 
-      setAto2RespostaSalva(dia, valor);
+      // atualiza a UI primeiro, pra não depender de timer/localStorage
       enviar.disabled = true;
       textarea.disabled = true;
       enviar.textContent = "Guardado";
+      mostrarResposta(valor);
 
+      // salva depois, sem quebrar a interface caso dê erro
       setTimeout(() => {
-        mostrarResposta(valor);
-      }, 900);
-    });
+        setAto2RespostaSalva(dia, valor);
+      }, 0);
+    };
   }
 
   acoes.appendChild(enviar);
