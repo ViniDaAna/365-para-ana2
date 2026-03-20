@@ -861,10 +861,8 @@ function renderAto2PerguntaUI(dia){
   }
 
   const respostas = getAto2RespostasSalvas();
-  const respostaSalva = respostas[String(dia)] && typeof respostas[String(dia)].resposta === "string"
-    ? respostas[String(dia)].resposta
-    : "";
-  const jaRespondeu = Boolean(String(respostaSalva).trim());
+  const respostaSalva = respostas[String(dia)]?.resposta || "";
+  const jaRespondeu = Boolean(respostaSalva.trim());
 
   box.classList.remove("hidden");
   box.setAttribute("aria-hidden","false");
@@ -880,7 +878,6 @@ function renderAto2PerguntaUI(dia){
 
   const corpo = document.createElement("div");
   corpo.className = "ato2PerguntaCorpo hidden";
-  corpo.setAttribute("aria-hidden","true");
 
   const pergunta = document.createElement("div");
   pergunta.className = "ato2PerguntaTexto";
@@ -901,70 +898,60 @@ function renderAto2PerguntaUI(dia){
   enviar.className = "ato2PerguntaEnviar";
   enviar.textContent = "Responder";
 
-  const respostaWrap = document.createElement("div");
-  respostaWrap.className = "ato2RespostaWrap hidden";
-  respostaWrap.setAttribute("aria-hidden","true");
+  const minhaRespostaWrap = document.createElement("div");
+  minhaRespostaWrap.className = "ato2MinhaResposta hidden";
+  minhaRespostaWrap.setAttribute("aria-hidden","true");
 
-  const respostaTag = document.createElement("div");
-  respostaTag.className = "ato2RespostaTag";
-  respostaTag.textContent = "eu respondi assim";
+  const minhaRespostaTexto = document.createElement("div");
+  minhaRespostaTexto.className = "ato2RespostaTexto";
+  minhaRespostaTexto.textContent = cfg.minhaResposta || "";
 
-  const respostaTexto = document.createElement("div");
-  respostaTexto.className = "ato2RespostaTexto";
+  minhaRespostaWrap.appendChild(minhaRespostaTexto);
 
-  respostaWrap.appendChild(respostaTag);
-  respostaWrap.appendChild(respostaTexto);
-
-  function abrirPergunta(){
+  botao.onclick = () => {
     botao.classList.add("hidden");
     corpo.classList.remove("hidden");
     corpo.setAttribute("aria-hidden","false");
     setTimeout(() => textarea.focus(), 60);
-  }
+  };
 
-  function mostrarResposta(textoResposta){
+  enviar.onclick = () => {
+    const valor = textarea.value.trim();
+    if(!valor){
+      textarea.focus();
+      return;
+    }
+
+    setAto2RespostaSalva(dia, valor);
+
+    enviar.disabled = true;
+    textarea.disabled = true;
+    enviar.textContent = "Guardado";
+
     corpo.classList.add("hidden");
     corpo.setAttribute("aria-hidden","true");
-    respostaTexto.textContent = String(textoResposta || "");
-    respostaWrap.classList.remove("hidden");
-    respostaWrap.setAttribute("aria-hidden","false");
-    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }
+
+    minhaRespostaWrap.classList.remove("hidden");
+    minhaRespostaWrap.setAttribute("aria-hidden","false");
+
+    card.scrollIntoView({ behavior: "smooth" });
+  };
 
   if(jaRespondeu){
     botao.classList.add("hidden");
-    mostrarResposta(respostaSalva);
-  } else {
-    botao.addEventListener("click", abrirPergunta);
-
-    enviar.onclick = () => {
-      const valor = String(textarea.value || "").trim();
-      if(!valor){
-        textarea.focus();
-        return;
-      }
-
-      // atualiza a UI primeiro, pra não depender de timer/localStorage
-      enviar.disabled = true;
-      textarea.disabled = true;
-      enviar.textContent = "Guardado";
-      mostrarResposta(valor);
-
-      // salva depois, sem quebrar a interface caso dê erro
-      setTimeout(() => {
-        setAto2RespostaSalva(dia, valor);
-      }, 0);
-    };
+    minhaRespostaWrap.classList.remove("hidden");
+    minhaRespostaWrap.setAttribute("aria-hidden","false");
   }
 
   acoes.appendChild(enviar);
+
   corpo.appendChild(pergunta);
   corpo.appendChild(textarea);
   corpo.appendChild(acoes);
 
   card.appendChild(botao);
   card.appendChild(corpo);
-  card.appendChild(respostaWrap);
+  card.appendChild(minhaRespostaWrap);
 
   box.appendChild(card);
 }
