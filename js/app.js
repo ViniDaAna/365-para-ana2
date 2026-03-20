@@ -917,17 +917,17 @@ function renderAto2PerguntaUI(dia){
     setTimeout(() => textarea.focus(), 60);
   }
 
-  function mostrarResposta(){
+  function mostrarResposta(textoResposta){
     corpo.classList.add("hidden");
     corpo.setAttribute("aria-hidden","true");
-    respostaTexto.textContent = cfg.resposta || "";
+    respostaTexto.textContent = String(textoResposta || "");
     respostaWrap.classList.remove("hidden");
     respostaWrap.setAttribute("aria-hidden","false");
   }
 
   if(jaRespondeu){
     botao.classList.add("hidden");
-    mostrarResposta();
+    mostrarResposta(respostas[String(dia)].resposta || "");
   } else {
     botao.addEventListener("click", abrirPergunta);
 
@@ -941,9 +941,10 @@ function renderAto2PerguntaUI(dia){
       setAto2RespostaSalva(dia, valor);
       enviar.disabled = true;
       textarea.disabled = true;
+      enviar.textContent = "Guardado";
 
       setTimeout(() => {
-        mostrarResposta();
+        mostrarResposta(valor);
       }, 900);
     });
   }
@@ -1512,3 +1513,8 @@ function verificarSenha(){
 
 setCornerDates();
 setInterval(setCornerDates, 60000);
+
+
+
+
+
