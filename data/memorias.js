@@ -5,7 +5,9 @@ const MEMORIAS = {
   30: `Eu lembro como se eu estivesse te contando agora.
 
 Era 19:00.
-A gente no shopping, indo pro cinema com aquela mistura de empolgação e nervoso que dá vontade de fingir que não existe.
+A gente no shopping, 
+indo pro cinema com aquela mistura de empolgação e nervoso,
+que dá vontade de fingir que não existe.
 
 A gente foi assistir Aquaman…
 e eu juro que tentei prestar atenção.
