@@ -927,7 +927,7 @@ function renderAto2PerguntaUI(dia){
 
   if(jaRespondeu){
     botao.classList.add("hidden");
-    const respostaSalva = respostas[String(dia)].resposta;
+    const respostaSalva = respostas[String(dia)]?.resposta || "";
     mostrarResposta(respostaSalva);
   } else {
     botao.addEventListener("click", abrirPergunta);
@@ -942,10 +942,11 @@ function renderAto2PerguntaUI(dia){
       setAto2RespostaSalva(dia, valor);
       enviar.disabled = true;
       textarea.disabled = true;
+      enviar.textContent = "Respondido";
 
       setTimeout(() => {
         mostrarResposta(valor);
-      }, 900);
+      }, 120);
     });
   }
 
