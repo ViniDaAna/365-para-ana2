@@ -899,13 +899,18 @@ function renderAto2PerguntaUI(dia){
   enviar.textContent = "Responder";
 
   const minhaRespostaWrap = document.createElement("div");
-  minhaRespostaWrap.className = "ato2MinhaResposta hidden";
+  minhaRespostaWrap.className = "ato2RespostaWrap hidden";
   minhaRespostaWrap.setAttribute("aria-hidden","true");
+
+  const minhaRespostaTag = document.createElement("div");
+  minhaRespostaTag.className = "ato2RespostaTag";
+  minhaRespostaTag.textContent = "minha resposta";
 
   const minhaRespostaTexto = document.createElement("div");
   minhaRespostaTexto.className = "ato2RespostaTexto";
-  minhaRespostaTexto.textContent = cfg.minhaResposta || "";
+  minhaRespostaTexto.textContent = cfg.resposta || "";
 
+  minhaRespostaWrap.appendChild(minhaRespostaTag);
   minhaRespostaWrap.appendChild(minhaRespostaTexto);
 
   botao.onclick = () => {
