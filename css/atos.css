@@ -1,3 +1,4 @@
+
 body[data-ato="1"]{
   --auraRGB: 212,175,55;
   --auraMin: 0.10;
@@ -258,6 +259,12 @@ body[data-ato="3"] .ato2Thought{
   transition: transform 0.2s ease, border-color 0.24s ease, background 0.24s ease, opacity 0.24s ease;
 }
 
+.ato2PerguntaBtn{
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .ato2PerguntaBtn:hover,
 .ato2PerguntaEnviar:hover{
   transform: translateY(-1px);
@@ -320,6 +327,8 @@ body[data-ato="3"] .ato2Thought{
 }
 
 .ato2RespostaWrap{
+  margin-top: 2px;
+  padding-top: 4px;
   animation: ato2PerguntaFade 0.42s ease both;
 }
 
@@ -1263,6 +1272,5 @@ body.modo-arquivo #blocoTexto{
     min-width: 70px;
   }
 }
-
 
 
