@@ -19,3 +19,6 @@ const ATO3_FOGUEIRA_CONFIG = {
   },
   mensagemFinal: "não foi só desejo…\nfoi o que a gente deixou acontecer depois dele."
 };
+
+// 🔥 ESSA LINHA É A CORREÇÃO
+window.ATO3_FOGUEIRA_CONFIG = ATO3_FOGUEIRA_CONFIG;
