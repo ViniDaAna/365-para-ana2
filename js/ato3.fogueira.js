@@ -12,7 +12,10 @@ function getAto3PapeisQueimados(){
 }
 
 function setAto3PapeisQueimados(list){
-  localStorage.setItem(ATO3_FOGO_PAPEIS_KEY, JSON.stringify(Array.from(new Set(list.map(Number).filter(Number.isFinite))).sort((a,b)=>a-b)));
+  localStorage.setItem(
+    ATO3_FOGO_PAPEIS_KEY,
+    JSON.stringify(Array.from(new Set(list.map(Number).filter(Number.isFinite))).sort((a,b)=>a-b))
+  );
 }
 
 function getAto3FogoNivel(){
@@ -26,13 +29,19 @@ function setAto3FogoNivel(nivel){
   localStorage.setItem(ATO3_FOGO_LEVEL_KEY, String(safe));
 }
 
+function getConfig(){
+  return window.ATO3_FOGUEIRA_CONFIG || null;
+}
+
 function isAto3PaperDay(dia){
-  return !!(window.ATO3_FOGUEIRA_CONFIG && ATO3_FOGUEIRA_CONFIG.diasComPapel.includes(Number(dia)));
+  const cfg = getConfig();
+  return !!(cfg && cfg.diasComPapel.includes(Number(dia)));
 }
 
 function getAto3PaperText(dia){
-  if(!window.ATO3_FOGUEIRA_CONFIG) return "";
-  return ATO3_FOGUEIRA_CONFIG.frases[String(dia)] || ATO3_FOGUEIRA_CONFIG.frases[Number(dia)] || "";
+  const cfg = getConfig();
+  if(!cfg) return "";
+  return cfg.frases[String(dia)] || "";
 }
 
 function wasAto3PaperBurned(dia){
@@ -79,17 +88,27 @@ function buildAto3FogueiraHTML(dia){
   const fogoClass = getAto3FogoClass(nivel);
   const finalRevealed = isAto3FinalRevealed();
   const finalDay = Number(dia) === 150;
-  const showPaper = isAto3PaperDay(dia) && !wasAto3PaperBurned(dia) && !finalDay;
+
+  const showPaper =
+    isAto3PaperDay(dia) &&
+    !wasAto3PaperBurned(dia) &&
+    !finalDay;
+
   const paperText = getAto3PaperText(dia);
-  const finalText = escapeAto3Html((window.ATO3_FOGUEIRA_CONFIG && ATO3_FOGUEIRA_CONFIG.mensagemFinal) || "").replace(/\n/g, "<br>");
+
+  const cfg = getConfig();
+  const finalText = escapeAto3Html(
+    (cfg && cfg.mensagemFinal) || ""
+  ).replace(/\n/g, "<br>");
 
   return `
     <div class="ato3FireWrap ${fogoClass} ${finalDay ? "is-final-day" : ""} ${finalRevealed ? "is-final-revealed" : ""}" data-fire-level="${nivel}">
       <div class="ato3Glow"></div>
-      <div class="ato3PaperLaunch" id="ato3PaperLaunch" aria-hidden="true"></div>
+
+      <div class="ato3PaperLaunch" id="ato3PaperLaunch"></div>
 
       <div class="ato3PaperBlock ${showPaper ? "" : "hidden"}">
-        <button type="button" class="ato3Paper" id="ato3PaperBtn">${escapeAto3Html(paperText)}</button>
+        <button class="ato3Paper" id="ato3PaperBtn">${escapeAto3Html(paperText)}</button>
       </div>
 
       <div class="ato3FireScene">
@@ -106,9 +125,13 @@ function buildAto3FogueiraHTML(dia){
         <div class="ato3Embers"></div>
       </div>
 
-      <div class="ato3Hint ${showPaper ? "" : "hidden"}">toca no papel e deixa queimar.</div>
+      <div class="ato3Hint ${showPaper ? "" : "hidden"}">
+        toca no papel e deixa queimar.
+      </div>
 
-      <div class="ato3FinalText ${finalRevealed ? "show" : ""}" id="ato3FinalText">${finalText}</div>
+      <div class="ato3FinalText ${finalRevealed ? "show" : ""}" id="ato3FinalText">
+        ${finalText}
+      </div>
     </div>
   `;
 }
@@ -122,6 +145,7 @@ function attachAto3PaperHandler(dia){
     btn.disabled = true;
 
     const launch = document.getElementById("ato3PaperLaunch");
+
     if(launch){
       launch.textContent = btn.textContent;
       launch.classList.add("show", "fly");
@@ -129,11 +153,10 @@ function attachAto3PaperHandler(dia){
 
     btn.classList.add("is-burning");
 
-    window.clearTimeout(window.__ato3BurnTimer);
-    window.__ato3BurnTimer = window.setTimeout(() => {
+    setTimeout(() => {
       markAto3PaperBurned(dia);
       renderAto3Fogueira(dia);
-    }, 900);
+    }, 1400);
   }, { once: true });
 }
 
@@ -145,38 +168,28 @@ function maybeTriggerAto3Final(){
   const finalText = document.getElementById("ato3FinalText");
   if(!box || !wrap || !finalText) return;
 
-  window.clearTimeout(window.__ato3FinalStartTimer);
-  window.clearTimeout(window.__ato3FinalRevealTimer);
-
-  window.__ato3FinalStartTimer = window.setTimeout(() => {
+  setTimeout(() => {
     wrap.classList.add("is-extinguishing");
 
-    window.__ato3FinalRevealTimer = window.setTimeout(() => {
+    setTimeout(() => {
       wrap.classList.add("is-final-revealed");
       finalText.classList.add("show");
       setAto3FinalRevealed();
-    }, 2100);
-  }, 900);
+    }, 2000);
+  }, 1000);
 }
 
 function renderAto3Fogueira(dia){
   const box = document.getElementById("ato3Fogueira");
   if(!box) return;
 
-  const specialMode =
-    document.body.classList.contains("modo-arquivo") ||
-    document.body.classList.contains("capsula-mode") ||
-    document.body.classList.contains("memoria-mode");
-
-  if(getAto(dia) !== 3 || specialMode){
+  if(getAto(dia) !== 3){
     box.classList.add("hidden");
-    box.setAttribute("aria-hidden", "true");
     box.innerHTML = "";
     return;
   }
 
   box.classList.remove("hidden");
-  box.setAttribute("aria-hidden", "false");
   box.innerHTML = buildAto3FogueiraHTML(dia);
 
   if(isAto3PaperDay(dia) && !wasAto3PaperBurned(dia) && Number(dia) !== 150){
