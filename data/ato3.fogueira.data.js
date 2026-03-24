@@ -22,5 +22,5 @@ const ATO3_FOGUEIRA_CONFIG = {
   mensagemFinal: "não foi só desejo…\nfoi o momento em que a gente parou de fingir que não sentia."
 };
 
-// 🔥 importante
+// 🔥 ESSENCIAL PRA FUNCIONAR
 window.ATO3_FOGUEIRA_CONFIG = ATO3_FOGUEIRA_CONFIG;
