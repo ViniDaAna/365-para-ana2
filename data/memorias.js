@@ -63,75 +63,42 @@ isso aqui não era só sobre nós dois
 era algo que eu queria construir
 de verdade`,
   
-  90: `Eu lembro daquela noite.
+  90: `Eu lembro do nervosismo.
 
-A gente tinha discutido.
-Não foi grito.
-Mas foi pesado.
+Talvez mais do que qualquer outra coisa.
 
-Palavras atravessadas.
-Silêncios longos demais.
-Aquela sensação incômoda
-de que talvez algo tivesse quebrado.
+Porque por mais que eu tentasse parecer calmo,
+minha cabeça estava completamente bagunçada.
 
-Eu deitei com a cabeça cheia.
-Orgulho misturado com medo.
-Medo misturado com saudade.
+Eu pensava se você estava confortável.
+Se estava tudo bem.
+Se aquele momento era especial pra você
+do mesmo jeito que era pra mim.
 
-E pela primeira vez
-não era a ideia de “estar certo”
-que me incomodava.
+E ao mesmo tempo
+existia aquela ansiedade silenciosa,
+aquele frio na barriga
+de perceber que a gente estava atravessando
+uma linha importante juntos.
 
-Era a possibilidade de te perder.
+O mais estranho
+é que depois dos primeiros minutos
+todo o nervosismo começou a desaparecer.
 
-Eu pensei em como seria
-acordar e não ter sua mensagem.
-Não ter seu bom dia.
-Não ter você.
+Porque deixou de parecer algo assustador.
 
-E aquilo doeu mais
-do que qualquer argumento.
+Parecia certo.
 
-Naquela madrugada
-eu entendi uma coisa:
+Parecia nós.
 
-amar não é nunca brigar.
-É decidir que a briga
-não é maior que o que a gente construiu.
+E acho que é isso que mais ficou guardado em mim:
+não foi sobre perfeição.
 
-No dia seguinte,
-quando a gente conversou —
-de verdade —
-sem ataque,
-sem defesa,
-só verdade —
-
-eu senti algo diferente.
-
-Não era só alívio.
-Era maturidade.
-
-Você poderia ter ido.
-Eu poderia ter me fechado.
-
-Mas nós ficamos.
-
-E ali eu percebi
-que o nosso amor
-não depende de dias perfeitos.
-
-Ele depende da nossa escolha.
-
-E desde aquela noite,
-toda vez que algo ameaça nos afastar,
-eu lembro de como a gente voltou.
-
-E isso me acalma.
-
-Porque eu sei
-que se for preciso,
-
-a gente escolhe de novo.`,
+Foi sobre confiança.
+Sobre carinho.
+Sobre a forma como,
+mesmo nervosos,
+a gente escolheu viver aquele momento juntos.`,
 
   120: `Eu lembro exatamente do nosso primeiro beijo.
 
