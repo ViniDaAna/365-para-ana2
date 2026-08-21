@@ -152,6 +152,7 @@ e sorriríamos juntos.`,
 
   180: `Eu lembro daquele dia que a gente começou a falar
 sobre filhos.
+Sobre nomes e tudo mais.
 
 No começo parecia algo distante,
 quase como um assunto que a gente
